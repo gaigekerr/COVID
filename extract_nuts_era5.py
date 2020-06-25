@@ -10,7 +10,7 @@ output to a single CSV file
     Gaige Hunter Kerr, <gaige.kerr@jhu.edu>
 """
 
-def extract_nuts_era5(var, year, vnuts):
+def extract_nuts_era5(var, year, vnuts, focus_countries=None):
     """Function loops through polygons corresponding to NUTS' subdivisions 
     of EU countries and finds ERA5 grid cells in each subdivision. A simple 
     arithmetic average is conducted over grid cells in subdivision for 
@@ -25,6 +25,8 @@ def extract_nuts_era5(var, year, vnuts):
         Year of interest
     vnuts : int
         NUTS division; either 1, 2, or 3 
+    focus_countries : list, optional
+        Two-letter codes referencing the countries of interest
         
     Returns
     -------
@@ -32,6 +34,7 @@ def extract_nuts_era5(var, year, vnuts):
     
     """
     import numpy as np
+    import warnings
     import sys
     import os, fnmatch
     import pandas as pd
@@ -43,7 +46,11 @@ def extract_nuts_era5(var, year, vnuts):
     DIR_ERA = DIR_ROOT+'ERA5/daily/%d/'%year
     DIR_SHAPE = DIR_ROOT+'geography/NUTS_shapefiles/NUTS_RG_10M_2016_4326_LEVL_2/'
     DIR_OUT = DIR_ROOT+'code/dataprocessing/ERA5tables/'
-    
+
+    DIR_ROOT = '/Users/ghkerr/Desktop/'
+    DIR_ERA = '/Users/ghkerr/Desktop/'
+    DIR_SHAPE = '/Users/ghkerr/Desktop/'
+    DIR_OUT = '/Users/ghkerr/Desktop/'
     # Search ERA5 directory for all daily files of variable
     infiles = fnmatch.filter(os.listdir(DIR_ERA), 'ERA5_*_%s.nc'%var)
     infiles = [DIR_ERA+x for x in infiles]
@@ -81,7 +88,23 @@ def extract_nuts_era5(var, year, vnuts):
     shapes = r.shapes()
     records = r.records()
     print('Shapefile read!')
-    
+
+    # If it is desired to only create tables for particular countries, 
+    # a list containing two-letter codes for focus countries should be passed
+    # to the fuction as the optional argument "focus_countries"
+    if focus_countries: 
+        focus_countries_idx = []
+        # Get NUTS-X codes for records in shapefile
+        for i in np.arange(0, len(shapes), 1):
+            record = records[i]
+            country = record['FID']
+            if country.startswith(tuple(focus_countries)):
+                focus_countries_idx.append(i)
+        shapes = map(shapes.__getitem__, focus_countries_idx)
+        shapes = list(shapes)
+        records = map(records.__getitem__, focus_countries_idx)
+        records = list(records)
+        
     # Variables for bar to indiciate progress iterating over shapes
     total = len(shapes)  # total number to reach
     bar_length = 30  # should be less than 100
@@ -107,8 +130,10 @@ def extract_nuts_era5(var, year, vnuts):
                     j_inside.append(j)
         # Select variable from reanalysis at grid cells 
         varl_nuts = varl[:, 0, i_inside, j_inside]
-        # Conduct spatial averaging over region 
-        varl_nuts = np.nanmean(varl_nuts, axis=1)
+        with warnings.catch_warnings():
+            warnings.simplefilter('ignore')
+            # Conduct spatial averaging over region 
+            varl_nuts = np.nanmean(varl_nuts, axis=1)
         # Add row corresponding to individual territory 
         row_df = pd.DataFrame([varl_nuts], index=[ifid], columns=dates)
         df = pd.concat([row_df, df])
@@ -127,13 +152,27 @@ def extract_nuts_era5(var, year, vnuts):
           pd.to_datetime(dates[-1]).strftime('%Y%m%d')), sep='\t')
     return 
 
-# Level of NUTS division
-vnuts = 2
+# # Extract all variables averaged over all NUTS-2 units
+# vnuts = 2
+# # ERA5 variables
+# era5vars = ['d2m', 'e', 'pev', 'sp', 'ssrd', 'swvl1', 't2mmax', 't2mmin', 
+#     'tp', 'u10', 'v10']
+# # Loop through years of interest
+# for year in [2020]:
+#     for var in era5vars:
+#         print('Extracting %s for %d for NUTS%d subdivisions!'%(var,year,vnuts))
+#         extract_nuts_era5(var, year, vnuts)
+#         print('\n')
+
+# Extract all variables averaged over NUTS-1 and -3 units in DE and IT for 
+# 2020
+vnuts = 1
 # ERA5 variables
 era5vars = ['d2m', 'e', 'pev', 'sp', 'ssrd', 'swvl1', 't2mmax', 't2mmin', 
     'tp', 'u10', 'v10']
 # Loop through years of interest
-for year in [2010, 2011]:
+for year in [2020]:
     for var in era5vars:
         print('Extracting %s for %d for NUTS%d subdivisions!'%(var,year,vnuts))
-        extract_nuts_era5(var, year, vnuts)
+        extract_nuts_era5(var, year, vnuts, focus_countries=['DE', 'IT'])
+        print('\n')
