@@ -1,15 +1,30 @@
-
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 """
+ERA5 reanalysis downloaded via a CDS request with script downloadERA5.py down-
+loads large, yearly files (or, in the case of the current year, a file with 
+data up to five days prior to the current date). This script creates individual 
+files for each variable and each calendar day comprised of daily mean values 
+for all variables besides temperature; for temperature daily maximum and 
+minimum values are calculated. Reanalysis data from the current year are 
+handled differently, as data from the current year are a mixture of ERA5 and 
+ERA5T data (see https://confluence.ecmwf.int/display/CUSF/ERA5+CDS+requests+which+return+a+mixture+of+ERA5+and+ERA5T+data)
+
+:Authors:
+    Gaige Hunter Kerr, <gaigekerr@gwu.edu>
 """
 import numpy as np
 import pandas as pd
 from netCDF4 import Dataset, date2num
 import netcdftime
 from datetime import datetime
-year= 2019
+from scipy import stats
+year = 2019
+
 # ERA5 variables (n.b., each individual .nc file should contain hourly data 
 # corresponding to individual variables in list VARS)
 DDIR = '/mnt/sahara/data1/COVID/ERA5/'
+
 # Variables as they appear in file names
 FSTR = ['10m_u_component_of_wind',
     '10m_v_component_of_wind',
@@ -21,6 +36,7 @@ FSTR = ['10m_u_component_of_wind',
     'surface_solar_radiation_downwards',
     'total_precipitation',
     'volumetric_soil_water_layer_1']
+
 # Variables as they appear as netCDF variable names. Note: the order must 
 # exactly match order in FSTR
 VAR = ['u10', 
@@ -33,6 +49,7 @@ VAR = ['u10',
     'ssrd',
     'tp',
     'swvl1']
+
 # Loop through variables/files
 for fstri in FSTR:
     var = VAR[np.where(np.array(FSTR)==fstri)[0][0]]
@@ -58,6 +75,18 @@ for fstri in FSTR:
         # Select variable of interest and hours in day 
         vararr = infile.variables[var]
         vararr = vararr[whereday]
+        vararr = vararr.filled(np.nan)
+        # Determine whether data are ERA5 or ERA5T. This section is 
+        # kludgey and might break 
+        if 'expver' in infile.dimensions:
+            expvershape = infile.variables['expver'].shape[0]
+            whereexpver = np.where(np.array(vararr.shape)==expvershape)[0][0]
+            # Find index with mode within expver dimension
+            for idx in np.arange(0, expvershape, 1):
+                mode = stats.mode(vararr[:,idx], axis=None)
+                if (mode.count[0] > 20000.) and (np.isnan(mode.mode[0]) != True):
+                        vararr[:,idx][vararr[:,idx]==mode.mode[0]] = np.nan
+            vararr = np.nanmean(vararr, axis=whereexpver)
         # Find daily mean of hourly values for all variables but temperature;
         # in the case of temperature, find the daily maximum and minimum 
         if var != 't2m': 
@@ -136,4 +165,4 @@ for fstri in FSTR:
                 dateo = dst.createVariable('time', np.float64, ('time',))
                 dateo[:] = date2num(datetime.combine(day, datetime.min.time()), 
                     units=time_unit_out)
-                dateo.setncattr('unit',time_unit_out)                
+                dateo.setncattr('unit',time_unit_out)
