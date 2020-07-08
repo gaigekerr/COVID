@@ -45,7 +45,7 @@ carleton2020 = ['Carleton & Meng (2020)',
                 '2020-03-15',
                 'Negative',
                 'A 1$^{\circ}$C increase in local temperature increases the case rate by 13%',
-                'Null',
+                'Non-significant',
                 'Specific humidity does not influence transmission']
 
 merow2020 = ['Merow & Urban (2020)',
@@ -87,13 +87,13 @@ sajadi2020 = ['Sajadi et al. (2020)',
               'Neutral',
               'Regions with significant community spread have average temperatures of 5-11$^{\circ}$C',
               'Neutral',
-              'Regions with significant community spread have average specific (3-6 g kg$^{-1}$)\nand absolute humidity (4-7 g m$^{-3}$)']
+              'Regions with significant community spread have an average specific humidity of 3-6 g kg$^{-1}$\nand an average absolute humidity of 4-7 g m$^{-3}$']
 
 araujo2020 = ['Araújo & Naimi (2020)',
               '2020-01-22',
               '2020-03-22',
               'Neutral',
-              'Positive cases are associated with mean temperature\nof 5.81$^{\circ}$C', 
+              'Positive cases are associated with a mean temperature of 5.81$^{\circ}$C', 
               '',
               '']
 
@@ -101,17 +101,17 @@ bukhari2020 = ['Bukhari & Jameel (2020)',
                 '2020-01-20',
                 '2020-03-19',
                 'Neutral',
-                'Cases have been reported over the range of temperature experienced in a\nyear, so it is unlikely spread will decrease at higher temperature', 
+                'A majority of cases (> 90%) occur when temperatures are in the range 3-17$^{\circ}$C', 
                 'Neutral',
-                'New cases developed in regions with absolute humidity of\n3-9 g m$^{-1}$']
+                'A majority of cases developed in regions with an absolute humidity of 3-9 g m$^{-1}$']
                
 chen2020 = ['Chen et al. (2020)',
             '2020-01-20',
             '2020-03-11',
-            'Neutral',
+            'Non-significant',
             'Changes in a single weather factor do not correlate\nwell '+
             'with cases',
-            'Neutral',
+            'Non-significant',
             'Changes in a single weather factor do not\ncorrelate well '+
             'with cases']
 
@@ -120,16 +120,16 @@ shi2020 = ['Shi et al. (2020)',
             '2020-02-29',
             'Negative',
             'Transmission rate significantly decreases as temperature increases',
-            'Neutral',
-            'No significant relationship between incidence and absolute\nhumidity was found.']
+            'Non-significant',
+            'No significant relationship between incidence and absolute humidity\nwas found']
 
 xu2020 = ['Xu et al. (2020)',
           '2019-12-12',
           '2020-04-22',
           'Negative',
           'For temperature > 25$^{\circ}$C, there is a\nsignificant 3.1% reduction in R',
-          'Neutral',
-          'Non-significant of relative humidity relationship\nfound with R; but for temperature > 25$^{\circ}$, an increase in humidity significantly decreases R']
+          'Negative',
+          'For temperature > 25$^{\circ}$C, a 10%\nincrease in relative humidity is\nassociated with a 1.2% decrease in\ntransmission']
  
 oliveiros2020 = ['Oliveiros et al. (2020)',
             '2020-01-23',
@@ -137,7 +137,7 @@ oliveiros2020 = ['Oliveiros et al. (2020)',
             'Negative',
             'A 20$^{\circ}$C temperature increase significantly delays the doubling\ntime by 1.8 days',
             'Positive',
-            'There is a significant negative association between doubling time and humidity']
+            'There is a significant negative association between doubling time and\nhumidity']
 
 qi2020 = ['Qi et al. (2020)$^\mathbf{{\dagger}}$',
           '2019-12-01',
@@ -149,7 +149,7 @@ qi2020 = ['Qi et al. (2020)$^\mathbf{{\dagger}}$',
           'Relative humidity is significantly negatively associated with cases']
 
 
-xie2020 = ['Xie et al. (2020)$^\mathbf{{\dagger}}$',
+xie2020 = ['Xie & Zhu (2020)$^\mathbf{{\dagger}}$',
           '2020-01-23',
           '2020-02-29',
           'Positive',
@@ -169,7 +169,7 @@ mwang2020 = ['M. Wang et al. (2020)',
               '2020-01-20',
               '2020-02-04',
               'Neutral',
-              'The effect of temperature on cases is non-linear; at low (high) temperature, the number of cases significantly increases\n(decreases) with increasing temperature',
+              'The effect of temperature on cases is non-linear, and transmission reaches a maximum for temperatures of 0-10$^{\circ}$C',
               '',
               '']
 
@@ -187,7 +187,7 @@ alvarezramirez2020 = ['Alvarez-Ramirez\net al. (2020)',
     'Negative',
     'The correlation between temperature and cases is negative\nwhen temperature is lagged by 6 days',
     'Positive',
-    'The correlation between relative humidity and cases is positive and acheives a maximum value when humidity is lagged 6-7 days']
+    'The correlation between relative humidity and cases is positive\nand acheives a maximum value when humidity is lagged\n6-7 days']
 
 yao2020 = ['Yao et al. (2020)$^\mathbf{{\dagger}}$',
        '2020-01-01',
@@ -195,7 +195,7 @@ yao2020 = ['Yao et al. (2020)$^\mathbf{{\dagger}}$',
        'Non-significant',
        'There is no signficant association of maximum or minimum\ntemperature with the incidence rate or R$_{0}$',
        'Non-significant',
-       'Relative humidity is not signficantly associated with the incidence rate or R$_{0}$']
+       'Relative humidity is not signficantly associated with the incidence rate\nor R$_{0}$']
 
 sobral2020 = ['Sobral et al. (2020)$^\mathbf{{\dagger}}$',
        '2019-12-01',
@@ -260,13 +260,13 @@ def hindcastperiod_climatesensitivity(studies, columns, fstr, title):
     xticklabels = dates[::20]
     xticklabels = [x.strftime('%Y-%m-%d') for x in xticklabels]
     # Initialize figure, axes
-    fig, ax = plt.subplots(figsize=(14,studies.shape[0]/1.7))
+    fig, ax = plt.subplots(figsize=(14.5,studies.shape[0]/1.6))
     citations = studies.index.values
     y_pos = np.arange(len(citations))
     # Define colormap
     colors, edges, edges_dummy, hatches = [], [], [], []
     for index, study in studies.iterrows():
-        relationship = study['TempRelationship']
+        relationship = study['HumidityRelationship']
         if relationship == 'Positive':
             colors.append('#d7191c')
             edges.append('#d7191c')
@@ -295,7 +295,7 @@ def hindcastperiod_climatesensitivity(studies, columns, fstr, title):
         ax.barh(y_pos[i], study_length[i], edgecolor=edges_dummy[i], 
             align='center', left=length_fromstart[i], color='None')    
     # Add summaries of studies 
-    for i, txt in enumerate(studies['TempNotes'].values):
+    for i, txt in enumerate(studies['HumidityNotes'].values):
         ax.annotate(txt, ((length_fromstart+study_length)[i]+1, y_pos[i]), 
             va='center', fontsize=9)
     ax.set_xticks(xticks)
@@ -311,9 +311,9 @@ def hindcastperiod_climatesensitivity(studies, columns, fstr, title):
     # Add legend
     pos_patch = mpatches.Patch(color='#d7191c', label='Positive')
     neg_patch = mpatches.Patch(color='#2c7bb6', label='Negative')
-    neut_patch = mpatches.Patch(color='#bababa', label='Neutral')
-    ns_patch = mpatches.Patch(edgecolor='k', facecolor='w', lw = 0., 
-        hatch='////', label='Non-significant')
+    neut_patch = mpatches.Patch(color='#bababa', label='Optimal range')
+    ns_patch = mpatches.Patch(edgecolor='k', facecolor='w', lw=0., 
+        hatch='////', label='No relationship')
     plt.legend(handles=[pos_patch, neg_patch, neut_patch, ns_patch], loc=3, 
        frameon=False, fontsize=12)
     # Saving
@@ -321,36 +321,32 @@ def hindcastperiod_climatesensitivity(studies, columns, fstr, title):
     plt.show()
     return 
     
-# Studies focused on temperature in China
-studies_china_temp = np.array([ma2020, jwang2020, poirier2020, chen2020, 
-    shi2020, oliveiros2020, qi2020, xie2020, guo2020, alvarezramirez2020,
-    yao2020])
-hindcastperiod_climatesensitivity(studies_china_temp, columns, 
-    'SARS-CoV-2_temp_china', 'Temperature - China')
+# # Studies focused on temperature in China
+# studies_china_temp = np.array([ma2020, jwang2020, poirier2020, chen2020, 
+#     shi2020, oliveiros2020, qi2020, xie2020, guo2020, alvarezramirez2020,
+#     yao2020])
+# hindcastperiod_climatesensitivity(studies_china_temp, columns, 
+#     'SARS-CoV-2_temp_china', 'Temperature - China')
 
-# Studies focused on temperature over global domain
-studies_global_temp = np.array([carleton2020, merow2020, bannister2020, 
-    sajadi2020, araujo2020, xu2020, bukhari2020, mwang2020, kassem2020, 
-    kassem2020b, sobral2020])
-hindcastperiod_climatesensitivity(studies_global_temp, columns, 
-    'SARS-CoV-2_temp_global', 'Temperature - Global')
+# # Studies focused on temperature over global domain
+# studies_global_temp = np.array([carleton2020, merow2020, bannister2020, 
+#     sajadi2020, araujo2020, xu2020, bukhari2020, mwang2020, kassem2020, 
+#     kassem2020b, sobral2020])
+# hindcastperiod_climatesensitivity(studies_global_temp, columns, 
+#     'SARS-CoV-2_temp_global', 'Temperature - Global')
 
-# Studies focused on humidity over China
-studies_china_humidity = np.array([qi2020, oliveiros2020, shi2020, chen2020, 
-    jwang2020, ma2020, guo2020, poirier2020, yao2020, 
-    alvarezramirez2020])
-hindcastperiod_climatesensitivity(studies_china_humidity, columns, 
-    'SARS-CoV-2_humidity_china', 'Humidity - China')
+# # Studies focused on humidity over China
+# studies_china_humidity = np.array([qi2020, oliveiros2020, shi2020, chen2020, 
+#     jwang2020, ma2020, guo2020, poirier2020, yao2020, 
+#     alvarezramirez2020])
+# hindcastperiod_climatesensitivity(studies_china_humidity, columns, 
+#     'SARS-CoV-2_humidity_china', 'Humidity - China')
 
-# Studies focused on humidity over global domain
-studies_global_humidity = np.array([carleton2020, merow2020, sajadi2020, 
-    bukhari2020, xu2020])
-hindcastperiod_climatesensitivity(studies_global_humidity, columns, 
-    'SARS-CoV-2_humidity_global', 'Humidity - Global')
-
-
-
-
+# # Studies focused on humidity over global domain
+# studies_global_humidity = np.array([carleton2020, merow2020, sajadi2020, 
+#     bukhari2020, xu2020])
+# hindcastperiod_climatesensitivity(studies_global_humidity, columns, 
+#     'SARS-CoV-2_humidity_global', 'Humidity - Global')
 
 # # # # FIGURE 1
 # import matplotlib.pyplot as plt
@@ -376,7 +372,6 @@ hindcastperiod_climatesensitivity(studies_global_humidity, columns,
 # # Barbados, Seychelles, Monaco, French Guinea, French Guyana, Andorra, 
 # # Malta, Macedonia, Martinique, Maldives in shapefiles 
 # shi2020 = ['China']
-# bu2020 = ['China']
 # xie2020 = ['China']
 # tosepu2020 = ['Indonesia']
 # qi2020 = ['China']
@@ -545,7 +540,7 @@ hindcastperiod_climatesensitivity(studies_global_humidity, columns,
 #     'Sri Lanka', 'Togo', 'Trinidad and Tobago', 'Uganda', 
 #     'Uzbekistan', 'Venezuela', 'Zambia']
 # # Concatenate studies' countries
-# studies = np.concatenate([shi2020, bu2020, xie2020, tosepu2020, 
+# studies = np.concatenate([shi2020, xie2020, tosepu2020, 
 #     qi2020, kassem2020, ficetola2020, ma2020, correaaraneda2020, 
 #     auler2020, kapoor2020, jwang2020, sahin2020, ahmadi2020, roy2020, 
 #     yao2020, bannistertyrrell2020, oliverios2020, chen2020, mollalo2020, 
@@ -576,14 +571,14 @@ hindcastperiod_climatesensitivity(studies_global_humidity, columns,
 # vmax = 14
 # # Define the bins and normalize
 # bounds = np.arange(vmin-1, vmax+1, 1)
-# cmap = plt.get_cmap('YlGnBu')
+# cmap = plt.get_cmap('YlGnBu_r')
 # norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
 # # extract all colors from the .jet map
 # cmaplist = [cmap(i) for i in range(cmap.N)]
-# # Force the first color to be grey
-# under = '#ededed'
-# under = matplotlib.colors.to_rgba(under)
-# cmaplist = np.vstack((under, cmaplist))
+# ## Force the first color to be grey
+# # under = '#ededed'
+# # under = matplotlib.colors.to_rgba(under)
+# # cmaplist = np.vstack((under, cmaplist))
 # # create the new map
 # cmap = mpl.colors.LinearSegmentedColormap.from_list(
 #     'Custom cmap', cmaplist, cmap.N)
@@ -612,14 +607,13 @@ hindcastperiod_climatesensitivity(studies_global_humidity, columns,
 # cb.set_ticklabels(bounds[::2])
 # cb.set_label(label='Number of studies', size=16)
 # cb.ax.tick_params(labelsize=12)
-# plt.savefig('/Users/ghkerr/COVID/map_studylocation.png', dpi=600)
-# # 'Brazil', 'China', 'Japan', 'United States of America' all have 12 or greater studies
+# plt.savefig('/Users/ghkerr/COVID/figs/'+'map_studylocation.png', dpi=600)
+# 'Brazil', 'China', 'Japan', 'United States of America' all have 12 or greater studies
 
 # # # # FIGURE 2
 # import numpy as np
 # import matplotlib.pyplot as plt
 # shi2020 = ['temperature', 'humidity']
-# bu2020 = ['temperature', 'humidity', 'precipitation']
 # xie2020 = ['temperature', 'humidity', 'pressure', 'wind']
 # sobral2020 = ['temperature', 'precipitation']
 # carleton2020 = ['temperature', 'precipitation', 'humidity']
@@ -655,7 +649,7 @@ hindcastperiod_climatesensitivity(studies_global_humidity, columns,
 # mollalo2020 = ['temperature']
 # ujiie2020 = ['temperature']
 # # Concatenate studies' variables
-# studies = np.concatenate([shi2020, bu2020, xie2020, tosepu2020, 
+# studies = np.concatenate([shi2020, xie2020, tosepu2020, 
 #     qi2020, kassem2020, ficetola2020, ma2020, correaaraneda2020, 
 #     auler2020, kapoor2020, jwang2020, sahin2020, ahmadi2020, roy2020, 
 #     yao2020, bannistertyrrell2020, oliverios2020, chen2020, mollalo2020, 
@@ -664,60 +658,106 @@ hindcastperiod_climatesensitivity(studies_global_humidity, columns,
 #     araujo2020, xu2020, notari2020])
 # unique_variables, variable_counts = np.unique(studies, return_counts=True)
 # # Kludgey; this part is done manually 
-# variables = ['Humidity', 'Precipitation', 'Pressure', 'Other',
-#     'Radiation', 'Temperature', 'Wind']
-# counts = [23, 10, 3, 0, 7, 32, 9]
+# variables = ['Temperature', 'Humidity', 'Precipitation', 'Wind', 'Radiation',
+#      'Pressure', 'Other']
+# counts = [32, 23, 10, 9, 7, 3, 3]
 # bar_l = np.arange(1, len(variables)+1, 1)
 # # Plotting
-# f, (axb, axt) = plt.subplots(2, 1, sharex=True, figsize=(8,5))
-# # Plot identical for both axes
-# for ax in [axb, axt]:
-#     ax.bar(variables, counts, color='silver')
-#      # Plot 'Other' bar 
-#     ax1 = ax.bar(np.where(np.array(variables)=='Other')[0][0], 1, 
-#         label='Visibility', color='#a6cee3')
-#     ax2 = ax.bar(np.where(np.array(variables)=='Other')[0][0], 1, bottom=1, 
-#         label='Snowfall', color='#1f78b4')
-#     ax3 = ax.bar(np.where(np.array(variables)=='Other')[0][0], 1, bottom=2, 
-#         label='Evapotranspiration', color='#b2df8a')
-# # Zoom into "most" of the data versus the outliers
-# axb.set_ylim(22, 34)  # outliers only
-# axt.set_ylim(0, 12)  # most of the data
-# # Hide the spines between ax and ax2
-# axb.spines['bottom'].set_visible(False)
-# axt.spines['top'].set_visible(False)
-# axb.xaxis.tick_top()
-# axb.tick_params(bottom=None, top=None)
-# axt.xaxis.tick_bottom()
-# # Label "Other"
-# for r1, r2, r3 in zip(ax1, ax2, ax3):
-#     h1 = r1.get_height()
-#     h2 = r2.get_height()
-#     h3 = r3.get_height()    
-#     axt.text(r1.get_x()+r1.get_width()/2., h1/2., 'Visibility', 
-#          ha='center', va='center', color='k', fontsize=8)
-#     axt.text(r2.get_x()+r2.get_width()/2., h1+h2/2., 'Snowfall', 
-#          ha='center', va='center', color='k', fontsize=8)
-#     axt.text(r3.get_x()+r3.get_width()/2., h1+h2+h3/2., 'Evapotranspiration', 
-#          ha='center', va='center', color='k', fontsize=6)    
-# d = .01  # how big to make the diagonal lines in axes coordinates
-# # arguments to pass to plot, just so we don't keep repeating them
-# kwargs = dict(transform=axb.transAxes, color='k', clip_on=False)
-# axb.plot((-d, +d), (-d, +d), **kwargs)        # top-left diagonal
-# axb.plot((1 - d, 1 + d), (-d, +d), **kwargs)  # top-right diagonal
-# kwargs.update(transform=axt.transAxes)  # switch to the bottom axes
-# axt.plot((-d, +d), (1 - d, 1 + d), **kwargs)  # bottom-left diagonal
-# axt.plot((1 - d, 1 + d), (1 - d, 1 + d), **kwargs)  # bottom-right diagonal
+# f, (ax) = plt.subplots(1, 1, figsize=(8.5,5))
+# ax.bar(variables, counts, color='silver')
+# # Add number of studies above each plot 
+# counts_labels = ['32', '23', '10', '9', '7', '3', '3*']
+# for i, v in enumerate(counts):
+#     ax.text(i,v+0.5, counts_labels[i], color='k', ha='center', fontsize=16)
+# # Add text below plot to explain "Other"
+# ax.text(4.2, 32, '*', fontsize=16)
+# ax.text(4.4, 30.8, 'Visibility (1), Snowfall (1),\nEvapotranspiration (1)', 
+#     fontsize=12)
 # # Aesthetics
-# axt.xaxis.set_tick_params(labelsize=12)
-# axt.set_ylabel('Number of studies', fontsize=16, y=1.15, labelpad=12)
-# axt.set_yticks([0, 2, 4, 6, 8, 10, 12])
-# axb.set_yticks([22, 24, 26, 28, 30, 32, 34])
-# axt.set_yticklabels(['0', '', '4', '', '8', '', '12'], fontsize=12)
-# axb.set_yticklabels(['22', '', '26', '', '30', '', '34'], fontsize=12)
-# plt.savefig('/Users/ghkerr/COVID/bar_variablesstudies.png', dpi=600)
+# ax.xaxis.set_tick_params(labelsize=12)
+# ax.set_ylabel('Number of studies', fontsize=16, labelpad=12)
+# ax.set_yticks([0, 5, 10, 15, 20, 25, 30, 35])
+# ax.set_yticklabels(['0', '5', '10', '15', '20', '25', '30', '35'], fontsize=12)
+# plt.savefig('/Users/ghkerr/COVID/figs/'+'bar_variablesstudies.png', dpi=600)
 
 
-# TEMPERATURE = diurnal temp range, dew point
-# humidity = absolute, relative, SPECIFIC??
-# radiation = number of hours of sun per day
+# # # # FIGURE X
+# fig = plt.figure(figsize=(8,6))
+# ax = plt.subplot2grid((2,2),(0,0), rowspan=2)
+# ax2 = plt.subplot2grid((2,2),(0,1), rowspan=2)
+# # Study, control environmental, control non-environmental
+# studies = [['Ahmadi et al. (2020)', 0, 0],
+#     ['Alvarez-Ramirez & Meraz (2020)', 0, 0],
+#     ['Araújo & Naimi (2020)', 0, 0],
+#     ['Auler et al. (2020)', 0, 0],
+#     ['Bannister-Tyrrell et al. (2020)', 0, 2],
+#     ['Bukhari & Jameel (2020)', 0, 0],
+#     ['Carleton & Meng (2020)', 	0, 1],
+#     ['Chen et al. (2020)', 0, 0],
+#     ['Correa-Araneda et al. (2020)', 0, 0],
+#     ['Guo et al. (2020)', 0, 0],
+#     ['Kapoor et al. (2020)', 2, 4],
+#     ['Kassem et al. (2020)', 0, 0],
+#     ['Luo et al. (2020)', 0, 0],
+#     ['M. Wang et al. (2020)', 0, 0],
+#     ['Ma et al. (2020)', 5, 2],
+#     ['Merow & Urban (2020)', 0, 5],    
+#     ['Mollalo et al. (2020)', 0, 0],
+#     ['Notari et al. (2020)', 0, 0],
+#     ['Oliveiros et al. (2020)', 0, 0],
+#     ['Poirier et al. (2020)', 0, 0], 
+#     ['Qi et al. (2020)', 0, 2],
+#     ['Roy & Kar (2020)', 0, 0], 
+#     ['Şahin (2020)', 0, 0], 
+#     ['Sajadi et al. (2020)', 0, 0],
+#     ['Shi et al. (2020)', 0, 0],
+#     ['Sobral et al. (2020)', 0, 3],
+#     ['Tosepu et al. (2020)', 0, 0],
+#     ['Ujiiea et al. (2020)', 0, 2],
+#     ['Wang et al. (2020)', 0, 4], 
+#     ['Xie & Zhu (2020)', 3, 2] ,
+#     ['Xu et al. (2020)', 0, 3],
+#     ['Yudistira et al. (2020)', 0, 0]]
+# studies1 = np.array(studies)[:16]
+# counter = np.arange(0, len(studies1), 1)
+# environ = [float(x) for x in (studies1[:,1])]
+# environx = np.ones(shape=counter.shape[0])
+# nonenviron = [float(x) for x in (studies1[:,2])]
+# nonenvironx = np.ones(shape=counter.shape[0])*2.
+# for x in counter:
+#     ax.scatter(environx[x], counter[x], s=(environ[x]*2)**2.5, color='k', zorder=5)
+#     ax.scatter(nonenvironx[x], counter[x], s=(nonenviron[x]*2)**2.5, color='k', zorder=5)
+# ax.set_yticks(counter)
+# ax.set_ylim([-0.5, len(studies1)-0.5])
+# ax.set_yticklabels(studies1[:,0])
+# ax.set_xlim([0.8, 2.2])
+# ax.set_xticks([1, 2])
+# ax.set_xticklabels(['Environmental', 'Non-\nenvironmental'], fontsize=12)
+# ax.grid(True,linestyle="-", lw=0.5, color='silver', zorder=1)
+# ax.invert_yaxis()
+# studies2 = np.array(studies)[16:]
+# counter = np.arange(0, len(studies2), 1)
+# environ = [float(x) for x in (studies2[:,1])]
+# environx = np.ones(shape=counter.shape[0])
+# nonenviron = [float(x) for x in (studies2[:,2])]
+# nonenvironx = np.ones(shape=counter.shape[0])*2.
+# for x in counter:
+#     ax2.scatter(environx[x], counter[x], s=(environ[x]*2)**2.9, color='k', zorder=5)
+#     ax2.scatter(nonenvironx[x], counter[x], s=(nonenviron[x]*2)**2.9, color='k', zorder=5)
+# ax2.set_yticks(counter)
+# ax2.set_ylim([-0.5, len(studies2)-0.5])
+# ax2.set_yticklabels(studies2[:,0])
+# ax2.set_xlim([0.8, 2.2])
+# ax2.set_xticks([1, 2])
+# ax2.set_xticklabels(['Environmental', 'Non-\nenvironmental'], fontsize=12)
+# ax2.grid(True,linestyle="-", lw=0.5, color='silver', zorder=1)
+# ax2.invert_yaxis()
+# plt.subplots_adjust(left=0.28, wspace=1.1)
+# # Remove spines
+# for axtemp in [ax, ax2]:
+#     axtemp.spines['right'].set_visible(False)
+#     axtemp.spines['top'].set_visible(False)
+#     axtemp.spines['bottom'].set_visible(False)
+#     axtemp.spines['left'].set_visible(False)
+# plt.savefig('/Users/ghkerr/COVID/figs/'+'environ_nonenviron_controls.png',
+#     dpi=600)
