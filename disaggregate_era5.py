@@ -19,7 +19,7 @@ from netCDF4 import Dataset, date2num
 import netcdftime
 from datetime import datetime
 from scipy import stats
-year = 2019
+year = 2020
 
 # ERA5 variables (n.b., each individual .nc file should contain hourly data 
 # corresponding to individual variables in list VARS)
@@ -72,6 +72,14 @@ for fstri in FSTR:
         day = day.date() 
         print(var, day)
         whereday = np.where(np.array(datevar)==day)[0]
+        # Only form daily average/min or max files when all 24 hourly 
+        # timesteps are available - note that this should only trip on 
+        # the final day of the current year, depending on when data from CDS
+        # was pulled
+        if whereday.shape[0] != 24:
+            print('Only %d timesteps for %s available...skipping!'%(
+                whereday.shape[0],day)
+            continue
         # Select variable of interest and hours in day 
         vararr = infile.variables[var]
         vararr = vararr[whereday]
