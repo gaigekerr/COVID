@@ -41,16 +41,13 @@ def extract_nuts_era5(var, year, vnuts, focus_countries=None):
     from netCDF4 import num2date, Dataset
     import shapefile
     from shapely.geometry import shape, Point
-    # Relevant directoires
+    
+    # Relevant directories
     DIR_ROOT = '/mnt/sahara/data1/COVID/' 
     DIR_ERA = DIR_ROOT+'ERA5/daily/%d/'%year
     DIR_SHAPE = DIR_ROOT+'geography/NUTS_shapefiles/NUTS_RG_10M_2016_4326_LEVL_2/'
     DIR_OUT = DIR_ROOT+'code/dataprocessing/ERA5tables/'
 
-    DIR_ROOT = '/Users/ghkerr/Desktop/'
-    DIR_ERA = '/Users/ghkerr/Desktop/'
-    DIR_SHAPE = '/Users/ghkerr/Desktop/'
-    DIR_OUT = '/Users/ghkerr/Desktop/'
     # Search ERA5 directory for all daily files of variable
     infiles = fnmatch.filter(os.listdir(DIR_ERA), 'ERA5_*_%s.nc'%var)
     infiles = [DIR_ERA+x for x in infiles]
@@ -73,6 +70,16 @@ def extract_nuts_era5(var, year, vnuts, focus_countries=None):
     # Convert longitude from 0-360 deg to -180-180 deg. NUTS polygons appear
     # to be in these units
     lng = (lng+180)%360-180
+    # A bit kludgey, but get rid of Southern Hemisphere and parts of North 
+    # America to speed up looping through lats and lons to find intersections 
+    # with shapefiles
+    equator = np.where(lat==0.)[0][0]
+    europe_east = np.where(lng==50.)[0][0]
+    europe_west = np.where(lng==-25.)[0][0]
+    lat = lat[:equator+1]
+    lng_relevant = np.r_[0:europe_east,europe_west:len(lng)]
+    lng = lng[lng_relevant]
+    varl = varl[:,:,:equator+1,lng_relevant]    
     print('Data loaded!')
     
     # Create empty pandas DataFrame with columns corresponding to the dates
@@ -144,35 +151,24 @@ def extract_nuts_era5(var, year, vnuts, focus_countries=None):
                          .format('='*int(percent/(100.0/bar_length)),
                                  bar_length, int(percent)))
         sys.stdout.flush()
-    # Add index name and write out, filename indicates NUTS division level, 
+    # Add index name and write, filename indicates NUTS division level, 
     # variable included in .csv file, and start/end dates of data
-    df.index.name = 'NUTS%d'%vnuts
+    df.index.name = 'NUTS'
     df.to_csv(DIR_OUT+'ERA5_NUTS%d_%s_%s_%s.csv'
         %(vnuts,var,pd.to_datetime(dates[0]).strftime('%Y%m%d'),
           pd.to_datetime(dates[-1]).strftime('%Y%m%d')), sep='\t')
     return 
 
-# # Extract all variables averaged over all NUTS-2 units
-# vnuts = 2
-# # ERA5 variables
-# era5vars = ['d2m', 'e', 'pev', 'sp', 'ssrd', 'swvl1', 't2mmax', 't2mmin', 
-#     'tp', 'u10', 'v10']
-# # Loop through years of interest
-# for year in [2020]:
-#     for var in era5vars:
-#         print('Extracting %s for %d for NUTS%d subdivisions!'%(var,year,vnuts))
-#         extract_nuts_era5(var, year, vnuts)
-#         print('\n')
-
-# Extract all variables averaged over NUTS-1 and -3 units in DE and IT for 
-# 2020
-vnuts = 1
-# ERA5 variables
+from datetime import datetime
+# Extract all variables averaged over all NUTS units for 2020
 era5vars = ['d2m', 'e', 'pev', 'sp', 'ssrd', 'swvl1', 't2mmax', 't2mmin', 
     'tp', 'u10', 'v10']
 # Loop through years of interest
-for year in [2020]:
+for vnuts in [1,2,3]:
     for var in era5vars:
-        print('Extracting %s for %d for NUTS%d subdivisions!'%(var,year,vnuts))
-        extract_nuts_era5(var, year, vnuts, focus_countries=['DE', 'IT'])
+        start = datetime.now()
+        print('Extracting %s for NUTS%d subdivisions!'%(var,vnuts))
+        extract_nuts_era5(var, 2020, vnuts)        
+        diff = datetime.now() - start
+        print('Finished in %d seconds!'%diff.seconds)
         print('\n')
