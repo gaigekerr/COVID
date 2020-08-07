@@ -10,7 +10,7 @@ output to a single CSV file
     Gaige Hunter Kerr, <gaige.kerr@jhu.edu>
 """
 
-def extract_nuts_era5(var, year, vnuts, focus_countries=None):
+def extract_nuts_era5(var, var_unified, year, vnuts, focus_countries=None):
     """Function loops through polygons corresponding to NUTS' subdivisions 
     of EU countries and finds ERA5 grid cells in each subdivision. A simple 
     arithmetic average is conducted over grid cells in subdivision for 
@@ -21,6 +21,10 @@ def extract_nuts_era5(var, year, vnuts, focus_countries=None):
     ----------
     var : str
         ERA5 variable of interest; u10, v10, t2m, d2m, etc.
+    var_unified : str
+        Unified variable name from https://docs.google.com/spreadsheets/d/
+        1_fcdKu4c8c7zUSfF16071R-6bu2UpU_esLWKSA0YJJ8/edit?usp=sharing; should 
+        match the var
     year : int
         Year of interest
     vnuts : int
@@ -45,7 +49,7 @@ def extract_nuts_era5(var, year, vnuts, focus_countries=None):
     # Relevant directories
     DIR_ROOT = '/mnt/sahara/data1/COVID/' 
     DIR_ERA = DIR_ROOT+'ERA5/daily/%d/'%year
-    DIR_SHAPE = DIR_ROOT+'geography/NUTS_shapefiles/NUTS_RG_10M_2016_4326_LEVL_2/'
+    DIR_SHAPE = DIR_ROOT+'geography/NUTS_shapefiles/NUTS_RG_10M_2016_4326_LEVL_%s/'%vnuts
     DIR_OUT = DIR_ROOT+'code/dataprocessing/ERA5tables/'
 
     # Search ERA5 directory for all daily files of variable
@@ -155,20 +159,22 @@ def extract_nuts_era5(var, year, vnuts, focus_countries=None):
     # variable included in .csv file, and start/end dates of data
     df.index.name = 'NUTS'
     df.to_csv(DIR_OUT+'ERA5_NUTS%d_%s_%s_%s.csv'
-        %(vnuts,var,pd.to_datetime(dates[0]).strftime('%Y%m%d'),
+        %(vnuts,var_unified,pd.to_datetime(dates[0]).strftime('%Y%m%d'),
           pd.to_datetime(dates[-1]).strftime('%Y%m%d')), sep='\t')
     return 
 
 from datetime import datetime
 # Extract all variables averaged over all NUTS units for 2020
-era5vars = ['d2m', 'e', 'pev', 'sp', 'ssrd', 'swvl1', 't2mmax', 't2mmin', 
-    'tp', 'u10', 'v10']
+era5vars = ['d2m', 'pev', 'sp', 'ssrd', 'swvl1', 'swvl2', 'swvl3', 'swvl4', 
+    't2mmax', 't2mmin', 't2mavg', 'tp', 'u10', 'v10', 'slhf']
+era5vars_unified = ['DEW', 'PE', 'SP', 'SR', 'SM1', 'SM2', 'SM3', 'SM4', 
+    'Tmax', 'Tmin', 'T', 'P', 'U', 'V', 'LH']
 # Loop through years of interest
 for vnuts in [1,2,3]:
-    for var in era5vars:
+    for var, var_unified in zip(era5vars, era5vars_unified):
         start = datetime.now()
         print('Extracting %s for NUTS%d subdivisions!'%(var,vnuts))
-        extract_nuts_era5(var, 2020, vnuts)        
+        extract_nuts_era5(var, var_unified, 2020, vnuts)        
         diff = datetime.now() - start
         print('Finished in %d seconds!'%diff.seconds)
         print('\n')
