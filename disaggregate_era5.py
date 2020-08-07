@@ -5,10 +5,13 @@ ERA5 reanalysis downloaded via a CDS request with script downloadERA5.py down-
 loads large, yearly files (or, in the case of the current year, a file with 
 data up to five days prior to the current date). This script creates individual 
 files for each variable and each calendar day comprised of daily mean values 
-for all variables besides temperature; for temperature daily maximum and 
-minimum values are calculated. Reanalysis data from the current year are 
-handled differently, as data from the current year are a mixture of ERA5 and 
-ERA5T data (see https://confluence.ecmwf.int/display/CUSF/ERA5+CDS+requests+which+return+a+mixture+of+ERA5+and+ERA5T+data)
+for all variables besides temperature; for temperature, daily maximum, mean, 
+and minimum values are calculated. Daily summed precipitation is calculated. 
+
+Reanalysis data from the current year are handled differently, as data from 
+the current year are a mixture of ERA5 and ERA5T data (see 
+https://confluence.ecmwf.int/display/CUSF/ERA5+CDS+requests+which+return+a+
+mixture+of+ERA5+and+ERA5T+data)
 
 :Authors:
     Gaige Hunter Kerr, <gaigekerr@gwu.edu>
@@ -23,19 +26,23 @@ year = 2020
 
 # ERA5 variables (n.b., each individual .nc file should contain hourly data 
 # corresponding to individual variables in list VARS)
-DDIR = '/mnt/sahara/data1/COVID/ERA5/'
+DDIR = '/mnt/sahara/data2/gaige/'
+DDIR_OUT = '/mnt/sahara/data1/COVID/ERA5/daily/'
 
 # Variables as they appear in file names
 FSTR = ['10m_u_component_of_wind',
     '10m_v_component_of_wind',
     '2m_dewpoint_temperature', 
     '2m_temperature',
-    'evaporation',
     'potential_evaporation',
     'surface_pressure',
     'surface_solar_radiation_downwards',
     'total_precipitation',
-    'volumetric_soil_water_layer_1']
+    'volumetric_soil_water_layer_1',
+    'volumetric_soil_water_layer_2',
+    'volumetric_soil_water_layer_3',
+    'volumetric_soil_water_layer_4',
+    'surface_latent_heat_flux']
 
 # Variables as they appear as netCDF variable names. Note: the order must 
 # exactly match order in FSTR
@@ -43,12 +50,15 @@ VAR = ['u10',
     'v10',
     'd2m',
     't2m',
-    'e',
     'pev',
     'sp',
     'ssrd',
     'tp',
-    'swvl1']
+    'swvl1',
+    'swvl2',
+    'swvl3',
+    'swvl4',
+    'slhf']
 
 # Loop through variables/files
 for fstri in FSTR:
@@ -78,7 +88,7 @@ for fstri in FSTR:
         # was pulled
         if whereday.shape[0] != 24:
             print('Only %d timesteps for %s available...skipping!'%(
-                whereday.shape[0],day)
+                whereday.shape[0],day))
             continue
         # Select variable of interest and hours in day 
         vararr = infile.variables[var]
@@ -95,13 +105,15 @@ for fstri in FSTR:
                 if (mode.count[0] > 20000.) and (np.isnan(mode.mode[0]) != True):
                         vararr[:,idx][vararr[:,idx]==mode.mode[0]] = np.nan
             vararr = np.nanmean(vararr, axis=whereexpver)
-        # Find daily mean of hourly values for all variables but temperature;
-        # in the case of temperature, find the daily maximum and minimum 
-        if var != 't2m': 
-            vararr = np.nanmean(vararr,axis=0).data
-            # From https://stackoverflow.com/questions/15141563/python-netcdf-making-a-copy-of-all-variables-and-attributes-but-one
+        # For information on copying netCDF4 attributes, see 
+        # https://stackoverflow.com/questions/15141563/python-netcdf-making-a-
+        # copy-of-all-variables-and-attributes-but-one
+        # # # # Temperature
+        if var == 't2m':       
+            # For daily mean temperature
+            vararr_avg = np.nanmean(vararr,axis=0).data
             with Dataset(DDIR+'era5-hourly-%s-%d.nc'%(fstri,year), 'r') as \
-                src, Dataset(DDIR+'daily/'+'ERA5_%s_%s.nc'%(
+                src, Dataset(DDIR_OUT+'ERA5_%s_%savg.nc'%(
                 day.strftime('%Y%m%d'),var), 'w') as dst:
                 for name, dimension in src.dimensions.items():
                     if (name=='time') or (name=='expver'):
@@ -115,19 +127,18 @@ for fstri in FSTR:
                     x = dst.createVariable(name, variable.datatype, 
                         variable.dimensions)
                     dst.variables[name][:] = src.variables[name][:]
-                dst.createVariable(var, np.float32, ('time', 'latitude', 'longitude'))        
-                dst.variables[var][:] = vararr
-                # Write timestamps to netCDF file
+                dst.createVariable(var+'avg', np.float32, 
+                    ('time','latitude','longitude'))        
+                dst.variables[var+'avg'][:] = vararr_avg
                 time_unit_out = 'seconds since %s 00:00:00'%day.strftime('%Y-%m-%d')
                 dateo = dst.createVariable('time', np.float64, ('time',))
                 dateo[:] = date2num(datetime.combine(day, datetime.min.time()), 
                     units=time_unit_out)
-                dateo.setncattr('unit',time_unit_out)
-        else:
+                dateo.setncattr('unit',time_unit_out)                    
             # For daily maximum temperature 
             vararr_max = np.nanmax(vararr,axis=0).data
             with Dataset(DDIR+'era5-hourly-%s-%d.nc'%(fstri,year), 'r') as \
-                src, Dataset(DDIR+'daily/'+'ERA5_%s_%smax.nc'%(
+                src, Dataset(DDIR_OUT+'ERA5_%s_%smax.nc'%(
                 day.strftime('%Y%m%d'),var), 'w') as dst:
                 for name, dimension in src.dimensions.items():
                     if (name=='time') or (name=='expver'):
@@ -152,7 +163,7 @@ for fstri in FSTR:
             # For daily minimum temperature       
             vararr_min = np.nanmin(vararr,axis=0).data                      
             with Dataset(DDIR+'era5-hourly-%s-%d.nc'%(fstri,year), 'r') as \
-                src, Dataset(DDIR+'daily/'+'ERA5_%s_%smin.nc'%(
+                src, Dataset(DDIR_OUT+'ERA5_%s_%smin.nc'%(
                 day.strftime('%Y%m%d'),var), 'w') as dst:
                 for name, dimension in src.dimensions.items():
                     if (name=='time') or (name=='expver'):
@@ -169,6 +180,60 @@ for fstri in FSTR:
                 dst.createVariable(var+'min', np.float32, 
                     ('time','latitude','longitude'))        
                 dst.variables[var+'min'][:] = vararr_min
+                time_unit_out = 'seconds since %s 00:00:00'%day.strftime('%Y-%m-%d')
+                dateo = dst.createVariable('time', np.float64, ('time',))
+                dateo[:] = date2num(datetime.combine(day, datetime.min.time()), 
+                    units=time_unit_out)
+                dateo.setncattr('unit',time_unit_out)
+        # # # # Precipitation
+        if var == 'tp':       
+            # For daily total precipitation
+            vararr_sum = np.nansum(vararr,axis=0).data
+            with Dataset(DDIR+'era5-hourly-%s-%d.nc'%(fstri,year), 'r') as \
+                src, Dataset(DDIR_OUT+'ERA5_%s_%s.nc'%(
+                day.strftime('%Y%m%d'),var), 'w') as dst:
+                for name, dimension in src.dimensions.items():
+                    if (name=='time') or (name=='expver'):
+                        continue
+                    dst.createDimension(name, len(dimension) if not 
+                        dimension.isunlimited() else None)
+                dst.createDimension('time', 1)
+                for name, variable in src.variables.items():
+                    if (name==var) or (name=='expver') or (name=='time'):
+                        continue
+                    x = dst.createVariable(name, variable.datatype, 
+                        variable.dimensions)
+                    dst.variables[name][:] = src.variables[name][:]
+                dst.createVariable(var, np.float32, 
+                    ('time','latitude','longitude'))        
+                dst.variables[var][:] = vararr_sum
+                time_unit_out = 'seconds since %s 00:00:00'%day.strftime('%Y-%m-%d')
+                dateo = dst.createVariable('time', np.float64, ('time',))
+                dateo[:] = date2num(datetime.combine(day, datetime.min.time()), 
+                    units=time_unit_out)
+                dateo.setncattr('unit',time_unit_out)  
+        # # # # For variables OTHER THAN temperature and precipitation, 
+        # calculate simple means of hourly values
+        else: 
+            vararr = np.nanmean(vararr,axis=0).data
+            with Dataset(DDIR+'era5-hourly-%s-%d.nc'%(fstri,year), 'r') as \
+                src, Dataset(DDIR_OUT+'ERA5_%s_%s.nc'%(
+                day.strftime('%Y%m%d'),var), 'w') as dst:
+                for name, dimension in src.dimensions.items():
+                    if (name=='time') or (name=='expver'):
+                        continue
+                    dst.createDimension(name, len(dimension) if not 
+                        dimension.isunlimited() else None)
+                dst.createDimension('time', 1)
+                for name, variable in src.variables.items():
+                    if (name==var) or (name=='expver') or (name=='time'):
+                        continue
+                    x = dst.createVariable(name, variable.datatype, 
+                        variable.dimensions)
+                    dst.variables[name][:] = src.variables[name][:]
+                dst.createVariable(var, np.float32, ('time', 'latitude', 'longitude'))        
+                dst.variables[var][:] = vararr
+                # Write timestamps to netCDF file
                 time_unit_out = 'seconds since %s 00:00:00'%day.strftime('%Y-%m-%d')
                 dateo = dst.createVariable('time', np.float64, ('time',))
                 dateo[:] = date2num(datetime.combine(day, datetime.min.time()), 
