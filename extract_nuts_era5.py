@@ -10,7 +10,7 @@ output to a single CSV file
     Gaige Hunter Kerr, <gaige.kerr@jhu.edu>
 """
 
-def extract_nuts_era5(var, var_unified, year, vnuts, focus_countries=None):
+def extract_nuts_era5(var, year, vnuts, focus_countries=None):
     """Function loops through polygons corresponding to NUTS' subdivisions 
     of EU countries and finds ERA5 grid cells in each subdivision. A simple 
     arithmetic average is conducted over grid cells in subdivision for 
@@ -21,10 +21,6 @@ def extract_nuts_era5(var, var_unified, year, vnuts, focus_countries=None):
     ----------
     var : str
         ERA5 variable of interest; u10, v10, t2m, d2m, etc.
-    var_unified : str
-        Unified variable name from https://docs.google.com/spreadsheets/d/
-        1_fcdKu4c8c7zUSfF16071R-6bu2UpU_esLWKSA0YJJ8/edit?usp=sharing; should 
-        match the var
     year : int
         Year of interest
     vnuts : int
@@ -90,7 +86,7 @@ def extract_nuts_era5(var, var_unified, year, vnuts, focus_countries=None):
     # for each entry of varl. This DataFrame will be filled in the for loop 
     # below, and each row will corresponding to a different terroritial unit
     # in the EU 
-    df = pd.DataFrame(columns=dates)
+    df = pd.DataFrame(columns=[x[:-9] for x in dates])
     # Read NUTS for appropriate division; note that the "RG" files should 
     # be used...the release-notes.txt file indicates that these are the 
     # RG: regions (multipolygons), which are appropriate for 
@@ -146,7 +142,8 @@ def extract_nuts_era5(var, var_unified, year, vnuts, focus_countries=None):
             # Conduct spatial averaging over region 
             varl_nuts = np.nanmean(varl_nuts, axis=1)
         # Add row corresponding to individual territory 
-        row_df = pd.DataFrame([varl_nuts], index=[ifid], columns=dates)
+        row_df = pd.DataFrame([varl_nuts], index=[ifid], 
+            columns=[x[:-9] for x in dates])
         df = pd.concat([row_df, df])
         # Update progress bar
         percent = 100.0*ishape/total  
@@ -159,22 +156,20 @@ def extract_nuts_era5(var, var_unified, year, vnuts, focus_countries=None):
     # variable included in .csv file, and start/end dates of data
     df.index.name = 'NUTS'
     df.to_csv(DIR_OUT+'ERA5_NUTS%d_%s_%s_%s.csv'
-        %(vnuts,var_unified,pd.to_datetime(dates[0]).strftime('%Y%m%d'),
-          pd.to_datetime(dates[-1]).strftime('%Y%m%d')), sep='\t')
+        %(vnuts,var,pd.to_datetime(dates[0]).strftime('%Y%m%d'),
+          pd.to_datetime(dates[-1]).strftime('%Y%m%d')), sep=',')
     return 
 
 from datetime import datetime
 # Extract all variables averaged over all NUTS units for 2020
 era5vars = ['d2m', 'pev', 'sp', 'ssrd', 'swvl1', 'swvl2', 'swvl3', 'swvl4', 
     't2mmax', 't2mmin', 't2mavg', 'tp', 'u10', 'v10', 'slhf']
-era5vars_unified = ['DEW', 'PE', 'SP', 'SR', 'SM1', 'SM2', 'SM3', 'SM4', 
-    'Tmax', 'Tmin', 'T', 'P', 'U', 'V', 'LH']
 # Loop through years of interest
 for vnuts in [1,2,3]:
-    for var, var_unified in zip(era5vars, era5vars_unified):
+    for var in era5vars:
         start = datetime.now()
         print('Extracting %s for NUTS%d subdivisions!'%(var,vnuts))
-        extract_nuts_era5(var, var_unified, 2020, vnuts)        
+        extract_nuts_era5(var, 2020, vnuts)        
         diff = datetime.now() - start
         print('Finished in %d seconds!'%diff.seconds)
         print('\n')
