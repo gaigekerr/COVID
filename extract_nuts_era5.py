@@ -67,6 +67,16 @@ def extract_nuts_era5(var, year, vnuts, focus_countries=None):
         dates.append(str(date[0]))
         varl.append(infile.variables[var][:])
     varl = np.array(varl)
+    # Apply land-ocean mask; the documentation from ERA5 states tha t
+    # grid boxes with a value of 0.5 and below can only be comprised of a 
+    # water surface, so we set values less than this to 0 
+    lsm = DIR_ROOT+'geography/era5-land_sea_mask.nc'
+    lsm = Dataset(lsm, 'r')
+    lsm = lsm.variables['lsm'][0].data
+    mask = np.where(lsm<=0.5, np.nan, 0)
+    # Add mask to variable 
+    varl = varl+mask
+    
     # Convert longitude from 0-360 deg to -180-180 deg. NUTS polygons appear
     # to be in these units
     lng = (lng+180)%360-180
@@ -125,7 +135,8 @@ def extract_nuts_era5(var, year, vnuts, focus_countries=None):
         ifid = record['FID']
         # For each polygon, loop through model grid and check if grid cells
         # are in polygon (semi-slow and a little kludgey); see 
-        # stackoverflow.com/questions/7861196/check-if-a-geopoint-with-latitude-and-longitude-is-within-a-shapefile
+        # stackoverflow.com/questions/7861196/check-if-a-geopoint-with-
+        # latitude-and-longitude-is-within-a-shapefile
         # for additional information
         i_inside, j_inside = [], []
         for i, ilat in enumerate(lat):
@@ -135,6 +146,19 @@ def extract_nuts_era5(var, year, vnuts, focus_countries=None):
                     # Fill lists with indices of reanalysis in grid 
                     i_inside.append(i)
                     j_inside.append(j)
+        # If the NUTS unit is too small to not intersect with the ERA5 grid
+        # pick off the nearest point
+        if len(i_inside)==0:
+            lat_centroid = polygon.centroid.xy[1][0]
+            lng_centroid = polygon.centroid.xy[0][0]
+            lat_close = lat.flat[np.abs(lat-lat_centroid).argmin()]
+            lng_close = lng.flat[np.abs(lng-lng_centroid).argmin()]            
+            lat_close = np.where(lat==lat_close)[0][0]
+            lng_close = np.where(lng==lng_close)[0][0]            
+            i_inside.append(lat_close)
+            j_inside.append(lng_close)
+        print(ishape, len(i_inside))
+        
         # Select variable from reanalysis at grid cells 
         varl_nuts = varl[:, 0, i_inside, j_inside]
         with warnings.catch_warnings():
