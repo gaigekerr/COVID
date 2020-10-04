@@ -372,206 +372,206 @@ if 'mpl' not in sys.modules:
 
    
 
-import numpy as np
-import pandas as pd
-import matplotlib.pyplot as plt
-import matplotlib.patches as mpatches
+# import numpy as np
+# import pandas as pd
+# import matplotlib.pyplot as plt
+# import matplotlib.patches as mpatches
 
 
-columns = ['Citation', 'HindcastStart', 'HindcastEnd', 
-            'TempRelationship', 'TempNotes',
-            'HumidityRelationship', 'HumidityNotes']
+# columns = ['Citation', 'HindcastStart', 'HindcastEnd', 
+#             'TempRelationship', 'TempNotes',
+#             'HumidityRelationship', 'HumidityNotes']
 
-carleton2020 = ['Carleton & Meng (2020)',
-                '2020-01-22',
-                '2020-03-15',
-                'Negative',
-                'A 1$^{\circ}$C increase in local temperature increases the case rate by 13%',
-                'Non-significant',
-                'Specific humidity does not influence transmission']
+# carleton2020 = ['Carleton et al. (2020)',
+#                 '2020-01-01',
+#                 '2020-04-10',
+#                 'Non-significant',
+#                 'Cumulative effects of tempreature and humidity are\nnot statistically significant',
+#                 'Non-significant',
+#                 'Cumulative effects of tempreature and humidity are\nnot statistically significant']
 
-merow2020 = ['Merow & Urban (2020)',
-              '2020-02-01',
-              '2020-04-13',
-              'Positive',
-              'Temperature significantly positively affects\ngrowth rate',
-              'Non-significant',
-              'Humidity negatively decreased growth\nrates, but not significantly']
+# merow2020 = ['Merow & Urban (2020)',
+#               '2020-02-01',
+#               '2020-04-13',
+#               'Positive',
+#               'Temperature significantly positively affects\ngrowth rate',
+#               'Non-significant',
+#               'Humidity negatively decreased growth\nrates, but not significantly']
 
-jwang2020 = ['J. Wang et al. (2020)', 
-            '2020-01-21',
-            '2020-01-23',
-            'Negative',
-            'A 1$^{\circ}$C increase in temperature significantly lowers R$_e$ '+
-            'by 0.0225',
-            'Negative',
-            'A 1% increase in relative humidity significantly lowers R$_e$ by 0.0158']
+# jwang2020 = ['J. Wang et al. (2020)', 
+#             '2020-01-21',
+#             '2020-01-23',
+#             'Negative',
+#             'A 1$^{\circ}$C increase in temperature significantly lowers R$_e$ '+
+#             'by 0.0225',
+#             'Negative',
+#             'A 1% increase in relative humidity significantly lowers R$_e$ by 0.0158']
 
-ma2020 = ['Ma et al. (2020)$^\mathbf{{\dagger}}$', 
-          '2020-01-20',
-          '2020-02-29',
-          'Positive',
-          'A positive association is found between daily death counts and diurnal\ntemperature range',
-          'Negative',
-          'Absolute humidity is negatively associated with daily death counts']
+# ma2020 = ['Ma et al. (2020)$^\mathbf{{\dagger}}$', 
+#           '2020-01-20',
+#           '2020-02-29',
+#           'Positive',
+#           'A positive association is found between daily death counts and diurnal\ntemperature range',
+#           'Negative',
+#           'Absolute humidity is negatively associated with daily death counts']
 
-bannister2020 = ['Bannister-Tyrrell et al. (2020)',
-                  '2020-01-01',
-                  '2020-02-29',
-                  'Negative',
-                  'There is a negative correlation in the number of cases for temperature > 1$^{\circ}$C',
-                  '',
-                  '']
+# bannister2020 = ['Bannister-Tyrrell et al. (2020)',
+#                   '2020-01-01',
+#                   '2020-02-29',
+#                   'Negative',
+#                   'There is a negative correlation in the number of cases for temperature > 1$^{\circ}$C',
+#                   '',
+#                   '']
 
-sajadi2020 = ['Sajadi et al. (2020)$^\mathbf{{\dagger}}$',
-              '2020-01-01',
-              '2020-02-29',
-              'Neutral',
-              'Regions with significant community spread have average temperatures of 5-11$^{\circ}$C',
-              'Neutral',
-              'Regions with significant community spread have an average specific humidity of 3-6 g kg$^{-1}$\nand an average absolute humidity of 4-7 g m$^{-3}$']
+# sajadi2020 = ['Sajadi et al. (2020)$^\mathbf{{\dagger}}$',
+#               '2020-01-01',
+#               '2020-02-29',
+#               'Neutral',
+#               'Regions with significant community spread have average temperatures of 5-11$^{\circ}$C',
+#               'Neutral',
+#               'Regions with significant community spread have an average specific humidity of 3-6 g kg$^{-1}$\nand an average absolute humidity of 4-7 g m$^{-3}$']
 
-araujo2020 = ['Araújo & Naimi (2020)',
-              '2020-01-22',
-              '2020-03-22',
-              'Neutral',
-              'Positive cases are associated with a mean temperature of 5.81$^{\circ}$C', 
-              '',
-              '']
+# araujo2020 = ['Araújo & Naimi (2020)',
+#               '2020-01-22',
+#               '2020-03-22',
+#               'Neutral',
+#               'Positive cases are associated with a mean temperature of 5.81$^{\circ}$C', 
+#               '',
+#               '']
 
-bukhari2020 = ['Bukhari & Jameel (2020)',
-                '2020-01-20',
-                '2020-03-19',
-                'Neutral',
-                'A majority of cases (> 90%) occur when temperatures are in the range 3-17$^{\circ}$C', 
-                'Neutral',
-                'A majority of cases developed in regions with an absolute humidity of 3-9 g m$^{-1}$']
+# bukhari2020 = ['Bukhari & Jameel (2020)',
+#                 '2020-01-20',
+#                 '2020-03-19',
+#                 'Neutral',
+#                 'A majority of cases (> 90%) occur when temperatures are in the range 3-17$^{\circ}$C', 
+#                 'Neutral',
+#                 'A majority of cases developed in regions with an absolute humidity of 3-9 g m$^{-1}$']
                
-chen2020 = ['Chen et al. (2020)',
-            '2020-01-20',
-            '2020-03-11',
-            'Non-significant',
-            'Changes in a single weather factor do not correlate\nwell '+
-            'with cases',
-            'Non-significant',
-            'Changes in a single weather factor do not\ncorrelate well '+
-            'with cases']
+# chen2020 = ['Chen et al. (2020)',
+#             '2020-01-20',
+#             '2020-03-11',
+#             'Non-significant',
+#             'Changes in a single weather factor do not correlate\nwell '+
+#             'with cases',
+#             'Non-significant',
+#             'Changes in a single weather factor do not\ncorrelate well '+
+#             'with cases']
 
-shi2020 = ['Shi et al. (2020)',
-            '2020-01-20',
-            '2020-02-29',
-            'Negative',
-            'Transmission rate significantly decreases as temperature increases',
-            'Non-significant',
-            'No significant relationship between incidence and absolute humidity\nwas found']
+# shi2020 = ['Shi et al. (2020)',
+#             '2020-01-20',
+#             '2020-02-29',
+#             'Negative',
+#             'Transmission rate significantly decreases as temperature increases',
+#             'Non-significant',
+#             'No significant relationship between incidence and absolute humidity\nwas found']
 
-xu2020 = ['Xu et al. (2020)',
-          '2019-12-12',
-          '2020-04-22',
-          'Negative',
-          'For temperature > 25$^{\circ}$C, there is a\nsignificant 3.1% reduction in R',
-          'Negative',
-          'For temperature > 25$^{\circ}$C, a 10%\nincrease in relative humidity is\nassociated with a 1.2% decrease in\ntransmission']
+# xu2020 = ['Xu et al. (2020)',
+#           '2019-12-12',
+#           '2020-04-22',
+#           'Negative',
+#           'For temperature > 25$^{\circ}$C, there is a\nsignificant 3.1% reduction in R',
+#           'Negative',
+#           'For temperature > 25$^{\circ}$C, a 10%\nincrease in relative humidity is\nassociated with a 1.2% decrease in\ntransmission']
  
-oliveiros2020 = ['Oliveiros et al. (2020)',
-            '2020-01-23',
-            '2020-03-01',
-            'Negative',
-            'A 20$^{\circ}$C temperature increase significantly delays the doubling\ntime by 1.8 days',
-            'Positive',
-            'There is a significant negative association between doubling time and\nhumidity']
+# oliveiros2020 = ['Oliveiros et al. (2020)',
+#             '2020-01-23',
+#             '2020-03-01',
+#             'Negative',
+#             'A 20$^{\circ}$C temperature increase significantly delays the doubling\ntime by 1.8 days',
+#             'Positive',
+#             'There is a significant negative association between doubling time and\nhumidity']
 
-qi2020 = ['Qi et al. (2020)$^\mathbf{{\dagger}}$',
-          '2019-12-01',
-          '2020-02-11',
-          'Negative',
-          'A 1$^{\circ}$C increase in temperature leads to a signficant decrease '+
-          'in cases by 36-57%',
-          'Negative',
-          'Relative humidity is significantly negatively associated with cases']
+# qi2020 = ['Qi et al. (2020)$^\mathbf{{\dagger}}$',
+#           '2019-12-01',
+#           '2020-02-11',
+#           'Negative',
+#           'A 1$^{\circ}$C increase in temperature leads to a signficant decrease '+
+#           'in cases by 36-57%',
+#           'Negative',
+#           'Relative humidity is significantly negatively associated with cases']
 
 
-xie2020 = ['Xie & Zhu (2020)$^\mathbf{{\dagger}}$',
-          '2020-01-23',
-          '2020-02-29',
-          'Positive',
-          'A 1$^{\circ}$C increase in mean temperature (for temperature < 3$^{\circ}$C) was\nassociated with a significant 5% increase in the daily confirmed cases',
-          '',
-          '']
+# xie2020 = ['Xie & Zhu (2020)$^\mathbf{{\dagger}}$',
+#           '2020-01-23',
+#           '2020-02-29',
+#           'Positive',
+#           'A 1$^{\circ}$C increase in mean temperature (for temperature < 3$^{\circ}$C) was\nassociated with a significant 5% increase in the daily confirmed cases',
+#           '',
+#           '']
 
-guo2020 = ['Guo et al. (2020)$^\mathbf{{\dagger}}$',
-            '2020-01-24',
-            '2020-02-13',
-            'Negative',
-            'R$_{0}$ significantly decreases as the temperature increases ($r$(T, R$_{0}$) < 0)',
-            'Negative',
-            'R$_{0}$ significantly decreases as the humidity increases ($r$(RH, R$_{0}$) < 0)']
+# guo2020 = ['Guo et al. (2020)$^\mathbf{{\dagger}}$',
+#             '2020-01-24',
+#             '2020-02-13',
+#             'Negative',
+#             'R$_{0}$ significantly decreases as the temperature increases ($r$(T, R$_{0}$) < 0)',
+#             'Negative',
+#             'R$_{0}$ significantly decreases as the humidity increases ($r$(RH, R$_{0}$) < 0)']
 
-mwang2020 = ['M. Wang et al. (2020)',
-              '2020-01-20',
-              '2020-02-04',
-              'Neutral',
-              'The effect of temperature on cases is non-linear, and transmission reaches a maximum for temperatures of 0-10$^{\circ}$C',
-              '',
-              '']
+# mwang2020 = ['M. Wang et al. (2020)',
+#               '2020-01-20',
+#               '2020-02-04',
+#               'Neutral',
+#               'The effect of temperature on cases is non-linear, and transmission reaches a maximum for temperatures of 0-10$^{\circ}$C',
+#               '',
+#               '']
 
-poirier2020 = ['Poirier et al. (2020)',
-            '2020-01-22',
-            '2020-02-26',
-            'Non-significant',
-            'Temperature and humidity cannot explain the variability of R$_{0}$', 
-            'Non-significant',
-            'Temperature and humidity cannot explain the variability of R$_{0}$']
+# poirier2020 = ['Poirier et al. (2020)',
+#             '2020-01-22',
+#             '2020-02-26',
+#             'Non-significant',
+#             'Temperature and humidity cannot explain the variability of R$_{0}$', 
+#             'Non-significant',
+#             'Temperature and humidity cannot explain the variability of R$_{0}$']
 
-alvarezramirez2020 = ['Alvarez-Ramirez\net al. (2020)',
-    '2020-01-29',
-    '2020-03-06',
-    'Negative',
-    'The correlation between temperature and cases is negative\nwhen temperature is lagged by 6 days',
-    'Positive',
-    'The correlation between relative humidity and cases is positive\nand acheives a maximum value when humidity is lagged\n6-7 days']
+# alvarezramirez2020 = ['Alvarez-Ramirez\net al. (2020)',
+#     '2020-01-29',
+#     '2020-03-06',
+#     'Negative',
+#     'The correlation between temperature and cases is negative\nwhen temperature is lagged by 6 days',
+#     'Positive',
+#     'The correlation between relative humidity and cases is positive\nand acheives a maximum value when humidity is lagged\n6-7 days']
 
-yao2020 = ['Yao et al. (2020)$^\mathbf{{\dagger}}$',
-        '2020-01-01',
-        '2020-03-01',
-        'Non-significant',
-        'There is no signficant association of maximum or minimum\ntemperature with the incidence rate or R$_{0}$',
-        'Non-significant',
-        'Relative humidity is not signficantly associated with the incidence rate\nor R$_{0}$']
+# yao2020 = ['Yao et al. (2020)$^\mathbf{{\dagger}}$',
+#         '2020-01-01',
+#         '2020-03-01',
+#         'Non-significant',
+#         'There is no signficant association of maximum or minimum\ntemperature with the incidence rate or R$_{0}$',
+#         'Non-significant',
+#         'Relative humidity is not signficantly associated with the incidence rate\nor R$_{0}$']
 
-sobral2020 = ['Sobral et al. (2020)$^\mathbf{{\dagger}}$',
-        '2019-12-01',
-        '2020-03-28',
-        'Negative',
-        'There was a negative significant correlation between the average\ntemperature per country and the number of cases (6.4 cases/day\nreduction for 1$^{\circ}$F temperature increase)', 
-        '',
-        '']
+# sobral2020 = ['Sobral et al. (2020)$^\mathbf{{\dagger}}$',
+#         '2019-12-01',
+#         '2020-03-28',
+#         'Negative',
+#         'There was a negative significant correlation between the average\ntemperature per country and the number of cases (6.4 cases/day\nreduction for 1$^{\circ}$F temperature increase)', 
+#         '',
+#         '']
 
-kassem2020 = ['Kassem et al. (2020)',
-              '2020-01-01',
-              '2020-04-05',
-              'Non-significant',
-              'Countries with their first cases reported in Janaury do not\nshow a significant association with temperature', 
-              '',
-              '']
+# kassem2020 = ['Kassem et al. (2020)',
+#               '2020-01-01',
+#               '2020-04-05',
+#               'Non-significant',
+#               'Countries with their first cases reported in Janaury do not\nshow a significant association with temperature', 
+#               '',
+#               '']
 
-kassem2020b = ['Kassem et al. (2020)',
-              '2020-02-01',
-              '2020-04-05',
-              'Negative',
-              'Countries with their first cases reported in February\nshow a significant negative relationship between\ntemperature and cases',
-              '',
-              '']
+# kassem2020b = ['Kassem et al. (2020)',
+#               '2020-02-01',
+#               '2020-04-05',
+#               'Negative',
+#               'Countries with their first cases reported in February\nshow a significant negative relationship between\ntemperature and cases',
+#               '',
+#               '']
 
-caspi2020 = ['Caspi et al. (2020)',
-              '2020-01-01',
-              '2020-03-19',
-              'Negative',
-              'Temperature moderately negatively correlated with replication rate ($r$=-0.69)\nand rate of spread ($r$=-0.72)',
-              'Non-significant',
-              'Humidity is not significantly correlated with rate of spread or replication rate']
+# caspi2020 = ['Caspi et al. (2020)',
+#               '2020-01-01',
+#               '2020-03-19',
+#               'Negative',
+#               'Temperature moderately negatively correlated with replication rate ($r$=-0.69)\nand rate of spread ($r$=-0.72)',
+#               'Non-significant',
+#               'Humidity is not significantly correlated with rate of spread or replication rate']
 
-# # # # FIGURE 2
+# # # # # FIGURE 2
 # # Studies focused on temperature over global domain
 # studies_global_temp = np.array([carleton2020, merow2020, bannister2020, 
 #     sajadi2020, araujo2020, xu2020, bukhari2020, mwang2020, kassem2020, 
@@ -881,7 +881,7 @@ caspi2020 = ['Caspi et al. (2020)',
 #     ['Bashir et al. (2020)$^\mathbf{{\dagger}}$', 0 ,0],
 #     ['Bukhari & Jameel (2020)', 0, 0],
 #     ['Caspi et al. (2020)', 0, 0],
-#     ['Carleton & Meng (2020)', 	2, 2],
+#     ['Carleton et al. (2020)', 	2, 8],
 #     ['Chen et al. (2020)', 0, 0],
 #     ['Correa-Araneda et al. (2020)', 0, 0],
 #     ['Guo et al. (2020)$^\mathbf{{\dagger}}$', 0, 0],
@@ -914,13 +914,18 @@ caspi2020 = ['Caspi et al. (2020)',
 # environx = np.ones(shape=counter.shape[0])
 # nonenviron = [float(x) for x in (studies1[:,2])]
 # nonenvironx = np.ones(shape=counter.shape[0])*2.
+# scale = 2.4
 # for x in counter:
-#     ax.scatter(environx[x], counter[x], s=(environ[x]*2)**2.6, color='k', zorder=5)
-#     ax.scatter(nonenvironx[x], counter[x], s=(nonenviron[x]*2)**2.6, color='k', zorder=5)
+#     ax.scatter(environx[x], counter[x], s=(environ[x]*2)**scale, color='k', zorder=5)
+#     ax.scatter(nonenvironx[x], counter[x], s=(nonenviron[x]*2)**scale, color='k', zorder=5)
 # # Indicate time varying studies 
-# ax.scatter(2, 4, s=(nonenviron[4]*2)**2.6,color='r', zorder=6)    
-# ax.scatter(1, 6, s=(environ[6]*2)**2.6, color='r', zorder=6)    
-# ax.scatter(1, 14, s=(environ[14]*2)**2.6, color='r', zorder=6)    
+# ax.scatter(2, 4, s=(nonenviron[4]*2)**scale,color='r', zorder=6)    
+# ax.scatter(1, 6, s=(environ[6]*2)**scale, color='r', zorder=6)    
+# ax.scatter(1, 14, s=(environ[14]*2)**scale, color='r', zorder=6)    
+# ax.scatter(1, 8, s=(environ[8]*2)**scale, color='r', zorder=6)    
+# ax.scatter(2, 8, s=(nonenviron[8]*2)**scale, color='r', zorder=6)
+# ax.scatter(1, 15, s=(environ[15]*2)**scale, color='r', zorder=6)    
+# ax.scatter(2, 15, s=(nonenviron[15]*2)**scale, color='r', zorder=6)
 # ax.set_yticks(counter)
 # ax.set_ylim([-0.5, len(studies1)-0.5])
 # ax.set_yticklabels(studies1[:,0], fontsize=11)
@@ -936,12 +941,16 @@ caspi2020 = ['Caspi et al. (2020)',
 # nonenviron = [float(x) for x in (studies2[:,2])]
 # nonenvironx = np.ones(shape=counter.shape[0])*2.
 # for x in counter:
-#     ax2.scatter(environx[x], counter[x], s=(environ[x]*2)**2.6, color='k', zorder=5)
-#     ax2.scatter(nonenvironx[x], counter[x], s=(nonenviron[x]*2)**2.6, color='k', zorder=5)
-# ax2.scatter(2, 4, s=(nonenviron[4]*2)**2.6, color='r', zorder=6)    
-# ax2.scatter(2, 9, s=(nonenviron[9]*2)**2.6, color='r', zorder=6)    
-# ax2.scatter(2, 14, s=(environ[14]*2)**2.6, color='r', zorder=6)
-# ax2.scatter(2, 6, s=(nonenviron[6]*2)**2.6, color='r', zorder=6)   
+#     ax2.scatter(environx[x], counter[x], s=(environ[x]*2)**scale, color='k', zorder=5)
+#     ax2.scatter(nonenvironx[x], counter[x], s=(nonenviron[x]*2)**scale, color='k', zorder=5)
+# ax2.scatter(2, 4, s=(nonenviron[4]*2)**scale, color='r', zorder=6)    
+# ax2.scatter(2, 3, s=(nonenviron[3]*2)**scale, color='r', zorder=6)    
+# ax2.scatter(2, 9, s=(nonenviron[9]*2)**scale, color='r', zorder=6)    
+# ax2.scatter(2, 14, s=(environ[14]*2)**scale, color='r', zorder=6)
+# ax2.scatter(2, 6, s=(nonenviron[6]*2)**scale, color='r', zorder=6)   
+# ax2.scatter(2, 5, s=(nonenviron[5]*2)**scale, color='r', zorder=6)
+# ax2.scatter(1, 13, s=(environ[13]*2)**scale, color='r', zorder=6)
+# ax2.scatter(2, 13, s=(nonenviron[13]*2)**scale, color='r', zorder=6)
 # ax2.set_yticks(counter)
 # ax2.set_ylim([-0.5, len(studies2)-0.5])
 # ax2.set_yticklabels(studies2[:,0], fontsize=11)
