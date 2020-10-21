@@ -187,7 +187,7 @@ def extract_nuts_era5(var, year, vnuts, focus_countries=None):
           pd.to_datetime(dates[-1]).strftime('%Y%m%d')), sep=',')
     return 
 
-def extract_rds_era5(var, year, adminlev):
+def extract_ibge_era5(var, year, adminlev):
     """Function loops through polygons corresponding to Brazilian ADMIN1-3 
     subdivisions find ERA5 grid cells in each subdivision. A simple average is
     thereafter conducted over these grid cells. If the polygon does not contain
@@ -214,14 +214,24 @@ def extract_rds_era5(var, year, adminlev):
     import os, fnmatch
     import pandas as pd
     from netCDF4 import num2date, Dataset
-    import geobr
-    from shapely.geometry import Point
+    import shapefile
+    from shapely.geometry import Point, shape
+        
+    # As per Hamada's unified conventions, the second position should be
+    # letter codes corresponding to the state/district. IBGE conventions 
+    # for numerical representation of each current federation unit are found
+    # at https://en.wikipedia.org/wiki/ISO_3166-2:BR
+    code_to_abbrev = {11:'RO',12:'AC',13:'AM',14:'RR',15:'PA',16:'AP',
+        17:'TO',21:'MA',22:'PI',23:'CE',24:'RN',25:'PB',26:'PE',27:'AL',
+        28:'SE',29:'BA',31:'MG',32:'ES',33:'RJ',35:'SP',41:'PR',42:'SC',
+        43:'RS',50:'MS',51:'MT',52:'GO',53:'DF'}
     
     # Relevant directories
     DIR_ROOT = '/mnt/sahara/data1/COVID/' 
     DIR_ERA = DIR_ROOT+'ERA5/daily/%d/'%year
     DIR_OUT = DIR_ROOT+'code/dataprocessing/ERA5tables/'
-    
+    DIR_SHAPE = DIR_ROOT+'geography/BR/'
+
     # Search ERA5 directory for all daily files of variable
     infiles = fnmatch.filter(os.listdir(DIR_ERA), 'ERA5_*_%s.nc'%var)
     infiles = [DIR_ERA+x for x in infiles]
@@ -256,11 +266,11 @@ def extract_rds_era5(var, year, adminlev):
     # below, and each row will corresponding to a different administrative unit
     # in Brazil
     df = pd.DataFrame(columns=[x[:-9] for x in dates])
-    
+        
     # Convert longitude from 0-360 deg to -180-180 degrees
     lng = (lng+180)%360-180
     # Select Brazilian domain
-    brazil_east = np.where(lng==-34.)[0][0]
+    brazil_east = np.where(lng==-30.)[0][0]
     brazil_west = np.where(lng==-76.)[0][0]
     brazil_north = np.where(lat==7.)[0][0]
     brazil_south = np.where(lat==-34.)[0][0]
@@ -268,102 +278,107 @@ def extract_rds_era5(var, year, adminlev):
     lng = lng[brazil_west:brazil_east+1]
     varl = varl[:,:,brazil_north:brazil_south+1,brazil_west:brazil_east+1]    
     print('Data loaded!')
-    
-    # For some reason the meso and micro regions don't have record information 
-    # about the state abbreviation, but code_state maps to abbrev_state and 
-    # is preserved in the prefix of code_meso and code_micro for admin 2-3
-    code_to_abbrev = geobr.read_state(code_state='all', year=2019)
-    code_to_abbrev = dict(zip(code_to_abbrev['code_state'].values, 
-        code_to_abbrev['abbrev_state'].values)) 
-    # Admin 1 are Brazilian states/federal district; see 
-    # https://github.com/ipeaGIT/geobr/blob/master/python-package/examples/
-    # 1.%20Plotting%20geobr%20logo.ipynb for additional information about 
-    # package
+        
+    # I couldn't get the damn geobr package to work so I downloaded state, 
+    # local, and municipal files from https://www.ibge.gov.br/en/geosciences/
+    # territorial-organization/territorial-organization/18890-municipal-mesh.html?=&t=downloads        
+    # From this page go to municipio_2018 -> Brasil -> BR -> BR.zip
+    # Admin 1 are states/federal district
     if adminlev==1:
-        shapes = geobr.read_state(code_state='all', year=2019)
+        # Admin 1 are states/federal district, "unidades de federacao"
+        r = shapefile.Reader(DIR_SHAPE+'BRUFE250GC_SIR.shp')
+        # Get shapes, records
+        shapes = r.shapes()
+        records = r.records()
     # Admin 2 are meso regions
     if adminlev==2:
-        shapes = geobr.read_meso_region(code_meso='all', year=2019)    
+        r = shapefile.Reader(DIR_SHAPE+'BRMEE250GC_SIR.shp')
+        shapes = r.shapes()
+        records = r.records()
     # Admin 3 are micro regions
     if adminlev==3:
-        shapes = geobr.read_micro_region(code_micro='all', year=2019)
+        r = shapefile.Reader(DIR_SHAPE+'BRMIE250GC_SIR.shp')
+        shapes = r.shapes()
+        records = r.records()
     print('Shapefile read!')    
-        
+
     # Variables for bar to indiciate progress iterating over shapes
     total = len(shapes)  # total number to reach
     bar_length = 30  # should be less than 100
     # Loop through shapes; each shapes corresponds to NUTS code
     for ishape in np.arange(0, len(shapes), 1):
-            # Build a shapely polygon from shape
-            polygon = shapes.iloc[ishape]['geometry']
-            # Build unified geospatial ID (from 
-            # https://github.com/hsbadr/COVID-19)
-            if adminlev==1:
-                record = ('BR'+shapes.iloc[ishape]['abbrev_state'])
-            if adminlev==2:
-                # Look up state abbreviation 
-                cm = shapes.iloc[ishape]['code_meso']
-                sa = int(str(cm)[:2])
-                record = ('BR'+code_to_abbrev[sa]+(str(int(cm))[2:]))
-            if adminlev==3:        
-                cm = shapes.iloc[ishape]['code_micro']
-                sa = int(str(cm)[:2])
-                record = ('BR'+code_to_abbrev[sa]+(str(int(cm))[2:]))
+        # Build a shapely polygon from shape
+        polygon = shape(shapes[ishape]) 
+        # Read a single record call the record() method with the record's index
+        record = records[ishape]
+        # Build unified geospatial ID (from 
+        # https://github.com/hsbadr/COVID-19)
+        if adminlev==1:
+            gid = ('BR'+record['CD_GEOCUF'])
+        if adminlev==2:
+            gid = ('BR'+record['CD_GEOCME'][:2]+
+                record['CD_GEOCME'][2:])
+        if adminlev==3:        
+            gid = ('BR'+record['CD_GEOCMI'][:2]+
+                record['CD_GEOCMI'][2:])
             # For each polygon, loop through model grid and check if grid cells
             # are in polygon (semi-slow and a little kludgey); see 
             # stackoverflow.com/questions/7861196/check-if-a-geopoint-with-
             # latitude-and-longitude-is-within-a-shapefile
             # for additional information
-            i_inside, j_inside = [], []
-            for i, ilat in enumerate(lat):
-                for j, jlng in enumerate(lng): 
-                    point = Point(jlng, ilat)
-                    if polygon.contains(point) is True:
-                        # Fill lists with indices of reanalysis in grid 
-                        i_inside.append(i)
-                        j_inside.append(j)
-            # If the admin unit is too small to not intersect with the ERA5 grid
-            # pick off and average the nearest 9 points
-            if len(i_inside)==0:
-                lat_centroid = polygon.centroid.xy[1][0]
-                lng_centroid = polygon.centroid.xy[0][0]
-                lat_close = lat.flat[np.abs(lat-lat_centroid).argmin()]
-                lng_close = lng.flat[np.abs(lng-lng_centroid).argmin()]            
-                lat_close = np.where(lat==lat_close)[0][0]
-                lng_close = np.where(lng==lng_close)[0][0]
-                # Select nearest nine points
-                # (lat_close+1, lng_close-1) (lat_close+1, lng_close)  (lat_close+1, lng_close+1)
-                # (lat_close, lng_close-1)  (lat_close, lng_close)  (lat_close, lng_close+1)
-                # (lat_close-1, lng_close-1) (lat_close-1, lng_close)  (lat_close-1, lng_close+1)
-                i_inside.extend([lat_close+1, lat_close+1, lat_close+1, lat_close, 
-                    lat_close, lat_close, lat_close-1, lat_close-1, lat_close-1])
-                j_inside.extend([lng_close-1, lng_close, lng_close+1, lng_close-1, 
-                    lng_close, lng_close+1, lng_close-1, lng_close, lng_close+1])
-            # # Check points in admin unit with the following
-            # plt.contourf(lng, lat, np.nanmean(varl,axis=0)[0])
-            # plt.colorbar()
-            # plt.scatter(lng[j_inside],lat[i_inside])
-            # plt.show()
-            # Select variable from reanalysis at grid cells 
-            varl_admin = varl[:, 0, i_inside, j_inside]
-            with warnings.catch_warnings():
-                warnings.simplefilter('ignore')
-                # Conduct spatial averaging over region 
-                varl_admin = np.nanmean(varl_admin, axis=1)
-            # Add row corresponding to individual unit 
-            row_df = pd.DataFrame([varl_admin], index=[record], 
-                columns=[x[:-9] for x in dates])
-            df = pd.concat([row_df, df])
-            # Update progress bar
-            percent = 100.0*ishape/total  
-            sys.stdout.write('\r')
-            sys.stdout.write("Completed: [{:{}}] {:>3}%"
-                             .format('='*int(percent/(100.0/bar_length)),
-                                     bar_length, int(percent)))        
+        i_inside, j_inside = [], []
+        for i, ilat in enumerate(lat):
+            for j, jlng in enumerate(lng): 
+                point = Point(jlng, ilat)
+                if polygon.contains(point) is True:
+                    # Fill lists with indices of reanalysis in grid 
+                    i_inside.append(i)
+                    j_inside.append(j)
+        # If the admin unit is too small to not intersect with the ERA5 grid
+        # pick off and average the nearest 9 points
+        if len(i_inside)==0:
+            lat_centroid = polygon.centroid.xy[1][0]
+            lng_centroid = polygon.centroid.xy[0][0]
+            lat_close = lat.flat[np.abs(lat-lat_centroid).argmin()]
+            lng_close = lng.flat[np.abs(lng-lng_centroid).argmin()]            
+            lat_close = np.where(lat==lat_close)[0][0]
+            lng_close = np.where(lng==lng_close)[0][0]
+            # Select nearest nine points
+            # (lat_close+1, lng_close-1) (lat_close+1, lng_close)  (lat_close+1, lng_close+1)
+            # (lat_close, lng_close-1)  (lat_close, lng_close)  (lat_close, lng_close+1)
+            # (lat_close-1, lng_close-1) (lat_close-1, lng_close)  (lat_close-1, lng_close+1)
+            i_inside.extend([lat_close+1, lat_close+1, lat_close+1, lat_close, 
+                lat_close, lat_close, lat_close-1, lat_close-1, lat_close-1])
+            j_inside.extend([lng_close-1, lng_close, lng_close+1, lng_close-1, 
+                lng_close, lng_close+1, lng_close-1, lng_close, lng_close+1])
+        # # Check points in admin unit with the following
+        # import matplotlib.pyplot as plt
+        # plt.contourf(lng, lat, np.nanmean(varl,axis=0)[0])
+        # plt.colorbar()
+        # plt.title(gid)
+        # plt.scatter(lng[j_inside],lat[i_inside])
+        # plt.show()se, lng_close+1, lng_close-1, lng_close, lng_close+1])
+
+        # Select variable from reanalysis at grid cells 
+        varl_admin = varl[:, 0, i_inside, j_inside]
+        with warnings.catch_warnings():
+            warnings.simplefilter('ignore')
+            # Conduct spatial averaging over region 
+            varl_admin = np.nanmean(varl_admin, axis=1)
+        # Add row corresponding to individual unit 
+        row_df = pd.DataFrame([varl_admin], index=[gid], 
+            columns=[x[:-9] for x in dates])
+        df = pd.concat([row_df, df])
+        # Update progress bar
+        percent = 100.0*ishape/total  
+        sys.stdout.write('\r')
+        sys.stdout.write("Completed: [{:{}}] {:>3}%"
+                         .format('='*int(percent/(100.0/bar_length)),
+                                 bar_length, int(percent)))        
     # Add index name and write, filename indicates NUTS division level, 
     # variable included in .csv file, and start/end dates of data
-    df.index.name = 'RegiaoDeSaude'
-    df.to_csv(DIR_OUT+'ERA5_RegiaoDeSaude%d_%s_%s_%s.csv'
+    df.index.name = 'IBGE'
+    df.to_csv(DIR_OUT+'ERA5_IBGE%d_%s_%s_%s.csv'
         %(adminlev,var,pd.to_datetime(dates[0]).strftime('%Y%m%d'),
           pd.to_datetime(dates[-1]).strftime('%Y%m%d')), sep=',')
     return
@@ -372,9 +387,9 @@ from datetime import datetime
 # Extract all variables averaged over all NUTS units for 2020
 era5vars = ['d2m', 'pev', 'sp', 'ssrd', 'swvl1', 'swvl2', 'swvl3', 'swvl4', 
     't2mmax', 't2mmin', 't2mavg', 'tp', 'u10', 'v10', 'slhf']
-# # Loop through years of interest
+# Loop through years of interest
 # for vnuts in [1,2,3]:
-#     for var in era5vars:
+ #     for var in era5vars:
 #         start = datetime.now()
 #         print('Extracting %s for NUTS%d subdivisions!'%(var,vnuts))
 #         extract_nuts_era5(var, 2020, vnuts)        
@@ -385,11 +400,13 @@ era5vars = ['d2m', 'pev', 'sp', 'ssrd', 'swvl1', 'swvl2', 'swvl3', 'swvl4',
 for adminlev in [1,2,3]:
     for var in era5vars:
         start = datetime.now()
-        print('Extracting %s for NUTS%d subdivisions!'%(var,vnuts))
-        extract_rds_era5(var, year, adminlev)(var, 2020, adminlev)        
+        print('Extracting %s for Brazil Admin%d subdivisions!'%(var,adminlev))
+        extract_ibge_era5(var, 2020, adminlev)     
         diff = datetime.now() - start
+        print('\n')
         print('Finished in %d seconds!'%diff.seconds)
         print('\n')
-
-
-
+        
+        
+        
+        
