@@ -19,9 +19,12 @@ mixture+of+ERA5+and+ERA5T+data)
 import numpy as np
 import pandas as pd
 from netCDF4 import Dataset, date2num
-import netcdftime
+import cftime
 from datetime import datetime
 from scipy import stats
+# Note that if the year is given as "2020a", this will process the static
+# Jan-Aug unchanging part of the data record, while "2020" will process
+# the latest months. 
 year = 2020
 
 # ERA5 variables (n.b., each individual .nc file should contain hourly data 
@@ -63,7 +66,7 @@ VAR = ['u10',
 # Loop through variables/files
 for fstri in FSTR:
     var = VAR[np.where(np.array(FSTR)==fstri)[0][0]]
-    infile = Dataset(DDIR+'era5-hourly-%s-%d.nc'%(fstri,year), 'r')
+    infile = Dataset(DDIR+'era5-hourly-%s-%da.nc'%(fstri,year), 'r')
     tname = 'time'
     nctime = infile.variables[tname][:] # get values
     t_unit = infile.variables[tname].units # get unit (i.e., hours since...)
@@ -72,14 +75,14 @@ for fstri in FSTR:
     except AttributeError: # Attribute doesn't exist
         t_cal = u'gregorian' # or standard
     datevar = []
-    datevar.append(netcdftime.num2date(nctime, units=t_unit, calendar=t_cal))
+    datevar.append(cftime.num2pydate(nctime, units=t_unit, calendar=t_cal))
     datevar = np.array(datevar)[0]
     # Create date range that spans the time dimension
     dayrange = pd.date_range(datevar[0], datevar[-1])
     datevar = [x.date() for x in datevar]
     # Loop through days and find indices corresponding to each day
     for day in dayrange:
-        day = day.date() 
+        day = day.date()
         print(var, day)
         whereday = np.where(np.array(datevar)==day)[0]
         # Only form daily average/min or max files when all 24 hourly 
@@ -91,27 +94,36 @@ for fstri in FSTR:
                 whereday.shape[0],day))
             continue
         # Select variable of interest and hours in day 
-        vararr = infile.variables[var]
-        vararr = vararr[whereday]
-        vararr = vararr.filled(np.nan)
-        # Determine whether data are ERA5 or ERA5T. This section is 
-        # kludgey and might break 
-        if 'expver' in infile.dimensions:
-            expvershape = infile.variables['expver'].shape[0]
-            whereexpver = np.where(np.array(vararr.shape)==expvershape)[0][0]
-            # Find index with mode within expver dimension
-            for idx in np.arange(0, expvershape, 1):
-                mode = stats.mode(vararr[:,idx], axis=None)
-                if (mode.count[0] > 20000.) and (np.isnan(mode.mode[0]) != True):
-                        vararr[:,idx][vararr[:,idx]==mode.mode[0]] = np.nan
-            vararr = np.nanmean(vararr, axis=whereexpver)
+        try:
+            vararr = infile.variables[var][whereday]
+            vararr = vararr.filled(np.nan)            
+        except KeyError:
+            vararr_0001 = infile.variables[var+'_0001'][whereday]
+            vararr_0005 = infile.variables[var+'_0005'][whereday]
+            # Fill fill values with np.nan
+            vararr_0001 = vararr_0001.filled(np.nan)
+            vararr_0005 = vararr_0005.filled(np.nan)            
+            # Stack exper arrays and take mean along exper axis
+            vararr = np.stack([vararr_0001, vararr_0005])
+            vararr = np.nanmean(vararr, axis=0)
+        # # Determine whether data are ERA5 or ERA5T. This section is 
+        # # kludgey and might break 
+        # if 'expver' in infile.dimensions:
+        #     expvershape = infile.variables['expver'].shape[0]
+        #     whereexpver = np.where(np.array(vararr.shape)==expvershape)[0][0]
+        #     # Find index with mode within expver dimension
+        #     for idx in np.arange(0, expvershape, 1):
+        #         mode = stats.mode(vararr[:,idx], axis=None)
+        #         if (mode.count[0] > 20000.) and (np.isnan(mode.mode[0]) != True):
+        #                 vararr[:,idx][vararr[:,idx]==mode.mode[0]] = np.nan
+        #     vararr = np.nanmean(vararr, axis=whereexpver)
         # For information on copying netCDF4 attributes, see 
         # https://stackoverflow.com/questions/15141563/python-netcdf-making-a-
         # copy-of-all-variables-and-attributes-but-one
         # # # # Temperature
         if var == 't2m':       
             # For daily mean temperature
-            vararr_avg = np.nanmean(vararr,axis=0).data
+            vararr_avg = np.nanmean(vararr,axis=0)
             with Dataset(DDIR+'era5-hourly-%s-%d.nc'%(fstri,year), 'r') as \
                 src, Dataset(DDIR_OUT+'ERA5_%s_%savg.nc'%(
                 day.strftime('%Y%m%d'),var), 'w') as dst:
@@ -122,7 +134,7 @@ for fstri in FSTR:
                         dimension.isunlimited() else None)
                 dst.createDimension('time', 1)
                 for name, variable in src.variables.items():
-                    if (name==var) or (name=='expver') or (name=='time'):
+                    if (var in name) or (name=='expver') or (name=='time'):
                         continue
                     x = dst.createVariable(name, variable.datatype, 
                         variable.dimensions)
@@ -136,7 +148,7 @@ for fstri in FSTR:
                     units=time_unit_out)
                 dateo.setncattr('unit',time_unit_out)                    
             # For daily maximum temperature 
-            vararr_max = np.nanmax(vararr,axis=0).data
+            vararr_max = np.nanmax(vararr,axis=0)
             with Dataset(DDIR+'era5-hourly-%s-%d.nc'%(fstri,year), 'r') as \
                 src, Dataset(DDIR_OUT+'ERA5_%s_%smax.nc'%(
                 day.strftime('%Y%m%d'),var), 'w') as dst:
@@ -147,7 +159,7 @@ for fstri in FSTR:
                         dimension.isunlimited() else None)
                 dst.createDimension('time', 1)
                 for name, variable in src.variables.items():
-                    if (name==var) or (name=='expver') or (name=='time'):
+                    if (var in name) or (name=='expver') or (name=='time'):
                         continue
                     x = dst.createVariable(name, variable.datatype, 
                         variable.dimensions)
@@ -161,7 +173,7 @@ for fstri in FSTR:
                     units=time_unit_out)
                 dateo.setncattr('unit',time_unit_out)                
             # For daily minimum temperature       
-            vararr_min = np.nanmin(vararr,axis=0).data                      
+            vararr_min = np.nanmin(vararr,axis=0)                      
             with Dataset(DDIR+'era5-hourly-%s-%d.nc'%(fstri,year), 'r') as \
                 src, Dataset(DDIR_OUT+'ERA5_%s_%smin.nc'%(
                 day.strftime('%Y%m%d'),var), 'w') as dst:
@@ -172,7 +184,7 @@ for fstri in FSTR:
                         dimension.isunlimited() else None)
                 dst.createDimension('time', 1)
                 for name, variable in src.variables.items():
-                    if (name==var) or (name=='expver') or (name=='time'):
+                    if (var in name) or (name=='expver') or (name=='time'):
                         continue
                     x = dst.createVariable(name, variable.datatype, 
                         variable.dimensions)
@@ -188,7 +200,7 @@ for fstri in FSTR:
         # # # # Precipitation
         if var == 'tp':       
             # For daily total precipitation
-            vararr_sum = np.nansum(vararr,axis=0).data
+            vararr_sum = np.nansum(vararr,axis=0)
             with Dataset(DDIR+'era5-hourly-%s-%d.nc'%(fstri,year), 'r') as \
                 src, Dataset(DDIR_OUT+'ERA5_%s_%s.nc'%(
                 day.strftime('%Y%m%d'),var), 'w') as dst:
@@ -199,7 +211,7 @@ for fstri in FSTR:
                         dimension.isunlimited() else None)
                 dst.createDimension('time', 1)
                 for name, variable in src.variables.items():
-                    if (name==var) or (name=='expver') or (name=='time'):
+                    if (var in name) or (name=='expver') or (name=='time'):
                         continue
                     x = dst.createVariable(name, variable.datatype, 
                         variable.dimensions)
@@ -215,7 +227,7 @@ for fstri in FSTR:
         # # # # For variables OTHER THAN temperature and precipitation, 
         # calculate simple means of hourly values
         else: 
-            vararr = np.nanmean(vararr,axis=0).data
+            vararr = np.nanmean(vararr,axis=0)
             with Dataset(DDIR+'era5-hourly-%s-%d.nc'%(fstri,year), 'r') as \
                 src, Dataset(DDIR_OUT+'ERA5_%s_%s.nc'%(
                 day.strftime('%Y%m%d'),var), 'w') as dst:
@@ -226,7 +238,7 @@ for fstri in FSTR:
                         dimension.isunlimited() else None)
                 dst.createDimension('time', 1)
                 for name, variable in src.variables.items():
-                    if (name==var) or (name=='expver') or (name=='time'):
+                    if (var in name) or (name=='expver') or (name=='time'):
                         continue
                     x = dst.createVariable(name, variable.datatype, 
                         variable.dimensions)
