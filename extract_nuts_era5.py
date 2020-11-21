@@ -43,7 +43,7 @@ def extract_nuts_era5(var, year, vnuts, focus_countries=None):
     
     # Relevant directories
     DIR_ROOT = '/mnt/sahara/data1/COVID/' 
-    DIR_ERA = DIR_ROOT+'ERA5/daily/%d/'%year
+    DIR_ERA = DIR_ROOT+'ERA5/daily/%d/latestmonth/'%year
     DIR_SHAPE = DIR_ROOT+'geography/NUTS_shapefiles/NUTS_RG_10M_2016_4326_LEVL_%s/'%vnuts
     DIR_OUT = DIR_ROOT+'code/dataprocessing/ERA5tables/'
 
@@ -163,7 +163,11 @@ def extract_nuts_era5(var, year, vnuts, focus_countries=None):
             j_inside.extend([lng_close-1, lng_close, lng_close+1, lng_close-1, 
                 lng_close, lng_close+1, lng_close-1, lng_close, lng_close+1])
         # Select variable from reanalysis at grid cells 
-        varl_nuts = varl[:, 0, i_inside, j_inside]
+        try:
+            varl_nuts = varl[:, 0, i_inside, j_inside]
+        except IndexError:
+            varl_nuts = np.empty((len(varl),2))
+            varl_nuts[:] = np.nan
         with warnings.catch_warnings():
             warnings.simplefilter('ignore')
             # Conduct spatial averaging over region 
@@ -290,14 +294,9 @@ def extract_ibge_era5(var, year, adminlev):
         # Get shapes, records
         shapes = r.shapes()
         records = r.records()
-    # Admin 2 are meso regions
+    # Admin 2 are municipalities 
     if adminlev==2:
-        r = shapefile.Reader(DIR_SHAPE+'BRMEE250GC_SIR.shp')
-        shapes = r.shapes()
-        records = r.records()
-    # Admin 3 are micro regions
-    if adminlev==3:
-        r = shapefile.Reader(DIR_SHAPE+'BRMIE250GC_SIR.shp')
+        r = shapefile.Reader(DIR_SHAPE+'BRMUE250GC_SIR.shp')
         shapes = r.shapes()
         records = r.records()
     print('Shapefile read!')    
@@ -314,13 +313,10 @@ def extract_ibge_era5(var, year, adminlev):
         # Build unified geospatial ID (from 
         # https://github.com/hsbadr/COVID-19)
         if adminlev==1:
-            gid = ('BR'+record['CD_GEOCUF'])
+            gid = ('BR'+code_to_abbrev[int(record['CD_GEOCUF'])])
         if adminlev==2:
-            gid = ('BR'+record['CD_GEOCME'][:2]+
-                record['CD_GEOCME'][2:])
-        if adminlev==3:        
-            gid = ('BR'+record['CD_GEOCMI'][:2]+
-                record['CD_GEOCMI'][2:])
+            gid = ('BR'+code_to_abbrev[int(record['CD_GEOCMU'][:2])]+
+                record['CD_GEOCMU'])
             # For each polygon, loop through model grid and check if grid cells
             # are in polygon (semi-slow and a little kludgey); see 
             # stackoverflow.com/questions/7861196/check-if-a-geopoint-with-
@@ -387,26 +383,20 @@ from datetime import datetime
 # Extract all variables averaged over all NUTS units for 2020
 era5vars = ['d2m', 'pev', 'sp', 'ssrd', 'swvl1', 'swvl2', 'swvl3', 'swvl4', 
     't2mmax', 't2mmin', 't2mavg', 'tp', 'u10', 'v10', 'slhf']
-# Loop through years of interest
-# for vnuts in [1,2,3]:
- #     for var in era5vars:
+## Loop through years of interest
+#for vnuts in [1,2,3]:
+#    for var in era5vars:
 #         start = datetime.now()
 #         print('Extracting %s for NUTS%d subdivisions!'%(var,vnuts))
 #         extract_nuts_era5(var, 2020, vnuts)        
 #         diff = datetime.now() - start
 #         print('Finished in %d seconds!'%diff.seconds)
 #         print('\n')
-
-for adminlev in [1,2,3]:
+for adminlev in [1]:
     for var in era5vars:
         start = datetime.now()
         print('Extracting %s for Brazil Admin%d subdivisions!'%(var,adminlev))
         extract_ibge_era5(var, 2020, adminlev)     
         diff = datetime.now() - start
-        print('\n')
         print('Finished in %d seconds!'%diff.seconds)
         print('\n')
-        
-        
-        
-        
