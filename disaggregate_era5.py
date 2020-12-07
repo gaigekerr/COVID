@@ -66,7 +66,7 @@ VAR = ['u10',
 # Loop through variables/files
 for fstri in FSTR:
     var = VAR[np.where(np.array(FSTR)==fstri)[0][0]]
-    infile = Dataset(DDIR+'era5-hourly-%s-%da.nc'%(fstri,year), 'r')
+    infile = Dataset(DDIR+'era5-hourly-%s-%d.nc'%(fstri,year), 'r')
     tname = 'time'
     nctime = infile.variables[tname][:] # get values
     t_unit = infile.variables[tname].units # get unit (i.e., hours since...)
@@ -96,7 +96,29 @@ for fstri in FSTR:
         # Select variable of interest and hours in day 
         try:
             vararr = infile.variables[var][whereday]
-            vararr = vararr.filled(np.nan)            
+            vararr = vararr.filled(np.nan)
+            # This is kludgey, but if expver is present as a dimension (rather
+            # than the variable name suffix that the except KeyError lines 
+            # address, then figure out where the array is equal to the offset
+            # and replace with NaNs). Note that this method is preferred to 
+            # doing a global "search-and-find" for the offset value, because
+            # there are some values of the array that equal the offset value 
+            # that represent real values of the variable
+            if vararr.shape[1] == 2:
+                # Loop through every timestamp
+                for x in np.arange(0,len(vararr),1):
+                    # Find which dimension only has one unique value (i.e., 
+                    # only the offset)
+                    dim1 = vararr[x][0]
+                    dim2 = vararr[x][1]
+                    nunique1 = np.unique(dim1)
+                    numique2 = np.unique(dim2)
+                    # Replace with NaN
+                    if nunique1.shape[0]==1:
+                        vararr[x][0] = np.nan
+                    else: 
+                        vararr[x][1] = np.nan
+            vararr = np.nanmean(vararr, axis=1)
         except KeyError:
             vararr_0001 = infile.variables[var+'_0001'][whereday]
             vararr_0005 = infile.variables[var+'_0005'][whereday]
@@ -106,22 +128,8 @@ for fstri in FSTR:
             # Stack exper arrays and take mean along exper axis
             vararr = np.stack([vararr_0001, vararr_0005])
             vararr = np.nanmean(vararr, axis=0)
-        # # Determine whether data are ERA5 or ERA5T. This section is 
-        # # kludgey and might break 
-        # if 'expver' in infile.dimensions:
-        #     expvershape = infile.variables['expver'].shape[0]
-        #     whereexpver = np.where(np.array(vararr.shape)==expvershape)[0][0]
-        #     # Find index with mode within expver dimension
-        #     for idx in np.arange(0, expvershape, 1):
-        #         mode = stats.mode(vararr[:,idx], axis=None)
-        #         if (mode.count[0] > 20000.) and (np.isnan(mode.mode[0]) != True):
-        #                 vararr[:,idx][vararr[:,idx]==mode.mode[0]] = np.nan
-        #     vararr = np.nanmean(vararr, axis=whereexpver)
-        # For information on copying netCDF4 attributes, see 
-        # https://stackoverflow.com/questions/15141563/python-netcdf-making-a-
-        # copy-of-all-variables-and-attributes-but-one
         # # # # Temperature
-        if var == 't2m':       
+        if var == 't2m':
             # For daily mean temperature
             vararr_avg = np.nanmean(vararr,axis=0)
             with Dataset(DDIR+'era5-hourly-%s-%d.nc'%(fstri,year), 'r') as \
@@ -228,26 +236,26 @@ for fstri in FSTR:
         # calculate simple means of hourly values
         else: 
             vararr = np.nanmean(vararr,axis=0)
-            with Dataset(DDIR+'era5-hourly-%s-%d.nc'%(fstri,year), 'r') as \
-                src, Dataset(DDIR_OUT+'ERA5_%s_%s.nc'%(
-                day.strftime('%Y%m%d'),var), 'w') as dst:
-                for name, dimension in src.dimensions.items():
-                    if (name=='time') or (name=='expver'):
-                        continue
-                    dst.createDimension(name, len(dimension) if not 
-                        dimension.isunlimited() else None)
-                dst.createDimension('time', 1)
-                for name, variable in src.variables.items():
-                    if (var in name) or (name=='expver') or (name=='time'):
-                        continue
-                    x = dst.createVariable(name, variable.datatype, 
-                        variable.dimensions)
-                    dst.variables[name][:] = src.variables[name][:]
-                dst.createVariable(var, np.float32, ('time', 'latitude', 'longitude'))        
-                dst.variables[var][:] = vararr
-                # Write timestamps to netCDF file
-                time_unit_out = 'seconds since %s 00:00:00'%day.strftime('%Y-%m-%d')
-                dateo = dst.createVariable('time', np.float64, ('time',))
-                dateo[:] = date2num(datetime.combine(day, datetime.min.time()), 
-                    units=time_unit_out)
-                dateo.setncattr('unit',time_unit_out)
+with Dataset(DDIR+'era5-hourly-%s-%d.nc'%(fstri,year), 'r') as \
+    src, Dataset(DDIR_OUT+'ERA5_%s_%s.nc'%(
+    day.strftime('%Y%m%d'),var), 'w') as dst:
+    for name, dimension in src.dimensions.items():
+        if (name=='time') or (name=='expver'):
+            continue
+        dst.createDimension(name, len(dimension) if not 
+            dimension.isunlimited() else None)
+    dst.createDimension('time', 1)
+    for name, variable in src.variables.items():
+        if (var in name) or (name=='expver') or (name=='time'):
+            continue
+        x = dst.createVariable(name, variable.datatype, 
+            variable.dimensions)
+        dst.variables[name][:] = src.variables[name][:]
+    dst.createVariable(var, np.float32, ('time', 'latitude', 'longitude'))        
+    dst.variables[var][:] = vararr
+    # Write timestamps to netCDF file
+    time_unit_out = 'seconds since %s 00:00:00'%day.strftime('%Y-%m-%d')
+    dateo = dst.createVariable('time', np.float64, ('time',))
+    dateo[:] = date2num(datetime.combine(day, datetime.min.time()), 
+        units=time_unit_out)
+    dateo.setncattr('unit',time_unit_out)
