@@ -236,26 +236,26 @@ for fstri in FSTR:
         # calculate simple means of hourly values
         else: 
             vararr = np.nanmean(vararr,axis=0)
-with Dataset(DDIR+'era5-hourly-%s-%d.nc'%(fstri,year), 'r') as \
-    src, Dataset(DDIR_OUT+'ERA5_%s_%s.nc'%(
-    day.strftime('%Y%m%d'),var), 'w') as dst:
-    for name, dimension in src.dimensions.items():
-        if (name=='time') or (name=='expver'):
-            continue
-        dst.createDimension(name, len(dimension) if not 
-            dimension.isunlimited() else None)
-    dst.createDimension('time', 1)
-    for name, variable in src.variables.items():
-        if (var in name) or (name=='expver') or (name=='time'):
-            continue
-        x = dst.createVariable(name, variable.datatype, 
-            variable.dimensions)
-        dst.variables[name][:] = src.variables[name][:]
-    dst.createVariable(var, np.float32, ('time', 'latitude', 'longitude'))        
-    dst.variables[var][:] = vararr
-    # Write timestamps to netCDF file
-    time_unit_out = 'seconds since %s 00:00:00'%day.strftime('%Y-%m-%d')
-    dateo = dst.createVariable('time', np.float64, ('time',))
-    dateo[:] = date2num(datetime.combine(day, datetime.min.time()), 
-        units=time_unit_out)
-    dateo.setncattr('unit',time_unit_out)
+            with Dataset(DDIR+'era5-hourly-%s-%d.nc'%(fstri,year), 'r') as \
+                src, Dataset(DDIR_OUT+'ERA5_%s_%s.nc'%(
+                day.strftime('%Y%m%d'),var), 'w') as dst:
+                for name, dimension in src.dimensions.items():
+                    if (name=='time') or (name=='expver'):
+                        continue
+                    dst.createDimension(name, len(dimension) if not 
+                        dimension.isunlimited() else None)
+                dst.createDimension('time', 1)
+                for name, variable in src.variables.items():
+                    if (var in name) or (name=='expver') or (name=='time'):
+                        continue
+                    x = dst.createVariable(name, variable.datatype, 
+                        variable.dimensions)
+                    dst.variables[name][:] = src.variables[name][:]
+                dst.createVariable(var, np.float32, ('time', 'latitude', 'longitude'))        
+                dst.variables[var][:] = vararr
+                # Write timestamps to netCDF file
+                time_unit_out = 'seconds since %s 00:00:00'%day.strftime('%Y-%m-%d')
+                dateo = dst.createVariable('time', np.float64, ('time',))
+                dateo[:] = date2num(datetime.combine(day, datetime.min.time()), 
+                    units=time_unit_out)
+                dateo.setncattr('unit',time_unit_out)
