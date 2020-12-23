@@ -26,7 +26,6 @@ if 'mpl' not in sys.modules:
     matplotlib.rcParams['ytick.major.width'] = 1.0
     matplotlib.rcParams['ytick.minor.width'] = 1.0
 
-
 # # # # # FIGURE 1
 # import numpy as np
 # import matplotlib.pyplot as plt
@@ -227,6 +226,41 @@ if 'mpl' not in sys.modules:
 #     'Australia', 'Thailand', 'Iraq', 'United States of America',
 #     'Japan', 'Greece', 'South Korea']
 # bashir2020 = ['United States of America']
+# to2020 = ['Canada']
+# taiwo2020 = ['Nigeria']
+# byass2020 = ['China']
+# ropsario2020 = ['Brazil']
+# kaplin2020 = ['Algeria', 'Armenia', 'Austria', 'Belgium', 
+#     'Bosnia and Herz.', 'Croatia', 'Czechia', 'Egypt', 'Estonia', 
+#     'Finland', 'France', 'Germany', 'Greece', 'Hungary', 'Iceland', 'India', 
+#     'Iran', 'Iraq', 'Ireland', 'Israel', 'Japan', 'Kuwait', 'Lebanon', 
+#     'Malaysia', 'Mexico', 'Moldova', 'Morocco', 'Netherlands', 'Norway', 
+#     'Oman', 'Pakistan', 'Philippines', 'Poland', 'Portugal', 'Qatar', 
+#     'Romania', 'Saudi Arabia', 'Serbia', 'Singapore', 'Slovakia', 'Slovenia', 
+#     'South Korea', 'Spain', 'Sweden', 'Switzerland', 'Thailand', 'Turkey', 
+#     'United Arab Emirates', 'United Kingdom', 'Vietnam']
+# lin2020 = ['United States of America']
+# ma2020 = ['United States of America']
+# jamil2020 = ['United States of America', 'Spain', 'China', 'South Africa', 
+#     'South Korea', 'Turkey', 'Austria', 'Germany', 'Bangladesh', 'France',
+#     'United Kingdom', 'Saudi Arabia', 'Canada', 'Netherlands', 'Italy', 
+#     'Australia', 'Israel', 'Cameroon', 'Djibouti', 'Switzerland', 'Portugal',
+#     'Philippines', 'Malaysia', 'India', 'Russia', 'Algeria', 'Belarus', 
+#     'Belgium', 'Peru', 'United Arab Emirates', 'Luxembourg', 'Argentina',
+#     'Thailand', 'Romania', 'New Zealand', 'Ukraine', 'Iran', 'Uzbekistan', 
+#     'Poland', 'Chile', 'Azerbaijan', 'Indonesia', 'Czechia', 'Panama',
+#     'Colombia', 'Serbia', 'Norway', 'Maldives', 'Brazil', 'Pakistan', 'Zambia',
+#     'Ireland', 'Tunisia', 'Tajikistan', 'Haiti', 'Moldova', 'Armenia', 'Nepal',
+#     'Morocco', 'Croatia', 'Sudan', 'Hungary', 'Iceland', 'Guinea-Bissau', 
+#     'Guinea', 'Sweden', 'Lithuania', 'Dominican Rep.', 'Iraq', 'Ecuador', 
+#     'Bosnia and Herz.', 'Honduras', 'Kyrgyzstan', 'Greece', 'Finland', 
+#     'Costa Rica', 'Oman', 'Denmark', 'Estonia', 'Nigeria', 'Singapore', 
+#     'Macedonia', 'Kosovo', 'Lebanon', "CÃ´te d'Ivoire", 'Mexico', 'Kazakhstan', 
+#     'Slovenia', 'Qatar', 'Gabon', 'Kuwait', 'Ghana', 'Cuba', 'Somalia', 
+#     'Japan', 'Latvia', 'Afghanistan', 'Bolivia', 'Mali', 'Guatemala', 
+#     'Slovakia', 'Egypt', 'El Salvador', 'Senegal', 'Bahrain', 'Albania', 
+#     'Congo', 'Bulgaria', 'Ethiopia', 'Sri Lanka', 'Kenya', 'Eq. Guinea',
+#     'Venezuela']
 # # Concatenate studies' countries
 # studies = np.concatenate([shi2020, xie2020, tosepu2020, 
 #     qi2020, kassem2020, ficetola2020, ma2020, correaaraneda2020, 
@@ -234,7 +268,9 @@ if 'mpl' not in sys.modules:
 #     yao2020, bannistertyrrell2020, oliverios2020, chen2020, mollalo2020, 
 #     ujiie2020, poirier2020, guo2020, yudistira2020, bukhari2020,
 #     mwang2020, sajadi2020, islam2020, merow2020, list(carleton2020), 
-#     araujo2020, xu2020, notari2020, runkle2020, caspi2020, bashir2020])
+#     araujo2020, xu2020, notari2020, runkle2020, caspi2020, bashir2020, 
+#     to2020, taiwo2020, byass2020, ropsario2020, kaplin2020, lin2020, ma2020,
+#     jamil2020])
 # # Count occurrences in list
 # counts_studies = Counter(studies)
 # # Initialize figure, axis
@@ -245,7 +281,7 @@ if 'mpl' not in sys.modules:
 # ax.set_title('(a)', fontsize=14, loc='left')
 # ax2.set_title('(b)', fontsize=14, loc='left')
 # ocean_50m = cfeature.NaturalEarthFeature('physical', 'ocean', '50m',
-#     edgecolor=None, facecolor='silver')
+#     edgecolor=None, facecolor='lightgrey', alpha=0.6)
 # ax.add_feature(ocean_50m)
 # land_50m = cfeature.NaturalEarthFeature('physical', 'land', '50m',
 #     edgecolor='k', linewidth=0.05, facecolor=None)
@@ -256,7 +292,7 @@ if 'mpl' not in sys.modules:
 # # # Reinitialize countries
 # countries = reader.records()
 # vmin = 1
-# vmax = 14
+# vmax = 18
 # # Define the bins and normalize
 # bounds = np.arange(vmin-1, vmax+1, 1)
 # cmap = plt.get_cmap('YlGnBu_r')
@@ -327,6 +363,14 @@ if 'mpl' not in sys.modules:
 # bashir2020 = ['temperature', 'precipitation', 'humidity', 'wind']
 # caspi2020 = ['temperature', 'humidity', 'wind', 'precipitation']
 # runkle2020 = ['temperature', 'humidity', 'radiation']
+# to2020 = ['temperature']
+# taiwo2020 = ['temperature']
+# byass2020 = ['temperature', 'radiation', 'precipitation']
+# rosario2020 = ['temperature', 'humidity', 'radiation', 'wind', 'precipitation']
+# jamil2020 = ['temperature']
+# kaplin2020 = ['temperature', 'humidity']
+# lin2020 = ['humidity']
+# ma2020 = ['temperature', 'humidity']
 # # Concatenate studies' variables
 # studies = np.concatenate([shi2020, xie2020, tosepu2020, 
 #     qi2020, kassem2020, ficetola2020, ma2020, correaaraneda2020, 
@@ -334,18 +378,31 @@ if 'mpl' not in sys.modules:
 #     yao2020, bannistertyrrell2020, oliverios2020, chen2020, mollalo2020, 
 #     ujiie2020, poirier2020, guo2020, yudistira2020, bukhari2020,
 #     mwang2020, sajadi2020, islam2020, merow2020, carleton2020, 
-#     araujo2020, xu2020, notari2020, bashir2020, caspi2020, runkle2020])
+#     araujo2020, xu2020, notari2020, bashir2020, caspi2020, runkle2020, 
+#     to2020, taiwo2020, byass2020, rosario2020, jamil2020, kaplin2020, lin2020,
+#     ma2020])
 # unique_variables, variable_counts = np.unique(studies, return_counts=True)
 # # Kludgey; this part is done manually 
-# variables = ['Temperature', 'Humidity', 'Precipitation', 'Wind', 'Radiation',
-#       'Pressure', 'Other']
-# counts = [34, 25, 11, 11, 8, 3, 3]
+# variables = ['Temperature', 
+#     'Humidity', 
+#     'Precipitation', 
+#     'Wind', 
+#     'Radiation',
+#     'Pressure', 
+#     'Other']
+# counts = [41, # Temperature
+#     29, # Humidity
+#     13, # Precipitation
+#     12, # Wind
+#     10, # Radiation
+#     3, # Pressure 
+#     3] # Other = evapotranspiration, snowfall, visibility
 # bar_l = np.arange(1, len(variables)+1, 1)
 # # Plotting
 # # f, (ax) = plt.subplots(1, 1, figsize=(8.5,5))
 # ax2.bar(variables, counts, color='silver')
 # # Add number of studies above each plot 
-# counts_labels = ['34', '25', '11', '11', '8', '3', '3*']
+# counts_labels = ['41', '29', '13', '12', '10', '3', '3*']
 # for i, v in enumerate(counts):
 #     ax2.text(i,v+0.5, counts_labels[i], color='k', ha='center', fontsize=11)
 # # Add text below plot to explain "Other"
@@ -355,16 +412,17 @@ if 'mpl' not in sys.modules:
 # # Aesthetics
 # ax2.xaxis.set_tick_params(labelsize=11)
 # ax2.set_ylabel('Number of studies', fontsize=14)
-# ax2.set_ylim([0, 36])
-# ax2.set_yticks([0, 6, 12, 18, 24, 30, 36])
-# ax2.set_yticklabels(['0', '6', '12', '18', '24', '30', '36'], fontsize=11)
+# ax2.set_ylim([0, 42])
+# ax2.set_yticks([0, 7, 14, 21, 28, 35, 42])
+# ax2.set_yticklabels(['0', '7', '14', '21', '28', '35', '42'], fontsize=11)
 # # Hide the right and top spines
 # ax2.spines['right'].set_visible(False)
 # ax2.spines['top'].set_visible(False)
 # # Shift ax2 to match ax
 # ax_pos = ax.get_position()
-# ax2.set_position([0.48, ax_pos.y0, (ax_pos.x1-ax_pos.x0)+0.1, (ax_pos.y1-ax_pos.y0)])
-# plt.savefig('/Users/ghkerr/COVID/figs/'+'fig1.pdf', dpi=600)
+# ax2.set_position([0.48, ax_pos.y0, (ax_pos.x1-ax_pos.x0)+0.1, 
+#     (ax_pos.y1-ax_pos.y0)])
+# plt.savefig('/Users/ghkerr/COVID/figs/'+'fig1_revised.pdf', dpi=1000)
 
 
 
@@ -376,27 +434,24 @@ if 'mpl' not in sys.modules:
 # import pandas as pd
 # import matplotlib.pyplot as plt
 # import matplotlib.patches as mpatches
-
-
 # columns = ['Citation', 'HindcastStart', 'HindcastEnd', 
 #             'TempRelationship', 'TempNotes',
 #             'HumidityRelationship', 'HumidityNotes']
-
-# carleton2020 = ['Carleton et al. (2020)',
+# carleton2020 = ['Carleton et al. (2020)$^\mathbf{{\dagger}}$',
 #                 '2020-01-01',
 #                 '2020-04-10',
 #                 'Non-significant',
-#                 'Cumulative effects of tempreature and humidity are\nnot statistically significant',
+#                 'Cumulative effects of tempreature and humidity are not statistically significant',
 #                 'Non-significant',
-#                 'Cumulative effects of tempreature and humidity are\nnot statistically significant']
+#                 'Cumulative effects of tempreature and humidity are not statistically significant']
 
-# merow2020 = ['Merow & Urban (2020)',
+# merow2020 = ['Merow & Urban (2020)$^\mathbf{{\dagger}}$',
 #               '2020-02-01',
 #               '2020-04-13',
 #               'Positive',
-#               'Temperature significantly positively affects\ngrowth rate',
+#               'Temperature significantly positively affects growth rate',
 #               'Non-significant',
-#               'Humidity negatively decreased growth\nrates, but not significantly']
+#               'Humidity negatively decreased growth rates, but not significantly']
 
 # jwang2020 = ['J. Wang et al. (2020)', 
 #             '2020-01-21',
@@ -415,7 +470,7 @@ if 'mpl' not in sys.modules:
 #           'Negative',
 #           'Absolute humidity is negatively associated with daily death counts']
 
-# bannister2020 = ['Bannister-Tyrrell et al. (2020)',
+# bannister2020 = ['Meyer et al. (2020)$^\mathbf{{\dagger}}$',
 #                   '2020-01-01',
 #                   '2020-02-29',
 #                   'Negative',
@@ -439,7 +494,7 @@ if 'mpl' not in sys.modules:
 #               '',
 #               '']
 
-# bukhari2020 = ['Bukhari & Jameel (2020)',
+# bukhari2020 = ['Bukhari et al. (2020)$^\mathbf{{\dagger}}$',
 #                 '2020-01-20',
 #                 '2020-03-19',
 #                 'Neutral',
@@ -469,9 +524,9 @@ if 'mpl' not in sys.modules:
 #           '2019-12-12',
 #           '2020-04-22',
 #           'Negative',
-#           'For temperature > 25$^{\circ}$C, there is a\nsignificant 3.1% reduction in R',
+#           'For temperature > 25$^{\circ}$C, there is a significant 3.1% reduction in $\widehat{\mathregular{R}}$',
 #           'Negative',
-#           'For temperature > 25$^{\circ}$C, a 10%\nincrease in relative humidity is\nassociated with a 1.2% decrease in\ntransmission']
+#           'For temperature > 25$^{\circ}$C, a 10% increase in relative humidity is\nassociated with a 1.2% decrease in transmission']
  
 # oliveiros2020 = ['Oliveiros et al. (2020)',
 #             '2020-01-23',
@@ -515,7 +570,7 @@ if 'mpl' not in sys.modules:
 #               '',
 #               '']
 
-# poirier2020 = ['Poirier et al. (2020)',
+# poirier2020 = ['Poirier et al. (2020)$^\mathbf{{\dagger}}$',
 #             '2020-01-22',
 #             '2020-02-26',
 #             'Non-significant',
@@ -543,7 +598,7 @@ if 'mpl' not in sys.modules:
 #         '2019-12-01',
 #         '2020-03-28',
 #         'Negative',
-#         'There was a negative significant correlation between the average\ntemperature per country and the number of cases (6.4 cases/day\nreduction for 1$^{\circ}$F temperature increase)', 
+#         'There was a negative significant correlation between the average temperature per country\nand the number of cases (6.4 cases/day reduction for 1$^{\circ}$F temperature increase)', 
 #         '',
 #         '']
 
@@ -559,7 +614,7 @@ if 'mpl' not in sys.modules:
 #               '2020-02-01',
 #               '2020-04-05',
 #               'Negative',
-#               'Countries with their first cases reported in February\nshow a significant negative relationship between\ntemperature and cases',
+#               'Countries with their first cases reported in February show a significant negative\nrelationship between temperature and cases',
 #               '',
 #               '']
 
@@ -567,15 +622,41 @@ if 'mpl' not in sys.modules:
 #               '2020-01-01',
 #               '2020-03-19',
 #               'Negative',
-#               'Temperature moderately negatively correlated with replication rate ($r$=-0.69)\nand rate of spread ($r$=-0.72)',
+#               'Temperature moderately negatively correlated with replication rate ($r$=-0.69) and rate of spread ($r$=-0.72)',
 #               'Non-significant',
 #               'Humidity is not significantly correlated with rate of spread or replication rate']
 
-# # # # # FIGURE 2
+# jamil2020 = ['Jamil et al. (2020)$^\mathbf{{\dagger}}$',
+#     '2020-02-01',
+#     '2020-05-31', 
+#     'Non-significant',
+#     'There is no evidence for thermal\ndependence of the transmission\nacross the 1-34$^{\circ}$C temperature\nrange across the affected countries',
+#     '',
+#     '']
+
+# kaplin2020 = ['Kaplin et al. (2020)',
+#     '2020-01-22', 
+#     '2020-04-06', 
+#     'Negative',
+#     'This corresponds to a 1.03% decrease in confirmed cases for each degree increase\nin temperature and a 3.68% increase for each degree decrease',
+#     '', 
+#     '']
+
+# byass2020 = ['Byass (2020)$^\mathbf{{\dagger}}$',
+#     '2020-01-01',
+#     '2020-02-28',
+#     'Positive',
+#     'Incident of infections was markedly lower at very low temperatures,\nimplying'+
+#     'the pandemic will simply go away given summer weather',
+#     '',
+#     '']
+
+
+# # # # FIGURE 2
 # # Studies focused on temperature over global domain
 # studies_global_temp = np.array([carleton2020, merow2020, bannister2020, 
 #     sajadi2020, araujo2020, xu2020, bukhari2020, mwang2020, kassem2020, 
-#     kassem2020b, sobral2020, caspi2020])
+#     kassem2020b, sobral2020, caspi2020, jamil2020, kaplin2020])
 # studies = pd.DataFrame(studies_global_temp, columns=columns)
 # studies.index = studies['Citation']
 # studies['HindcastStart'] = pd.to_datetime(studies['HindcastStart'], 
@@ -717,13 +798,13 @@ if 'mpl' not in sys.modules:
 # fig.text(.85, .955, r'$\bf{^{\dagger}}$ Peer-reviewed', 
 #       ha='left', fontsize=14)
 # # Saving
-# plt.savefig('/Users/ghkerr/COVID/figs/'+'fig2.pdf', dpi=600)
+# plt.savefig('/Users/ghkerr/COVID/figs/'+'fig2_revised.pdf', dpi=1000)
 
 # # # # FIGURE 4
 # # Studies focused on temperature over China domain
 # studies_china_temp = np.array([ma2020, jwang2020, poirier2020, chen2020, 
 #     shi2020, oliveiros2020, qi2020, xie2020, guo2020, alvarezramirez2020,
-#     yao2020])
+#     yao2020, byass2020])
 # studies = pd.DataFrame(studies_china_temp, columns=columns)
 # studies.index = studies['Citation']
 # studies['HindcastStart'] = pd.to_datetime(studies['HindcastStart'], 
@@ -866,116 +947,138 @@ if 'mpl' not in sys.modules:
 # fig.text(.85, .955, r'$\bf{^{\dagger}}$ Peer-reviewed', 
 #       ha='left', fontsize=14)
 # # Saving
-# plt.savefig('/Users/ghkerr/COVID/figs/'+'fig4.pdf', dpi=600)
+# plt.savefig('/Users/ghkerr/COVID/figs/'+'fig4_revised.pdf', dpi=1000)
 
-# # # # # FIGURE 3
-# fig = plt.figure(figsize=(10,6))
-# ax = plt.subplot2grid((2,2),(0,0), rowspan=2)
-# ax2 = plt.subplot2grid((2,2),(0,1), rowspan=2)
-# # Study, control environmental, control non-environmental
-# studies = [['Ahmadi et al. (2020)$^\mathbf{{\dagger}}$', 0, 0],
-#     ['Alvarez-Ramirez & Meraz (2020)', 0, 0],
-#     ['Araújo & Naimi (2020)', 0, 0],
-#     ['Auler et al. (2020)$^\mathbf{{\dagger}}$', 0, 0],
-#     ['Bannister-Tyrrell et al. (2020)', 0, 2],
-#     ['Bashir et al. (2020)$^\mathbf{{\dagger}}$', 0 ,0],
-#     ['Bukhari & Jameel (2020)', 0, 0],
-#     ['Caspi et al. (2020)', 0, 0],
-#     ['Carleton et al. (2020)', 	2, 8],
-#     ['Chen et al. (2020)', 0, 0],
-#     ['Correa-Araneda et al. (2020)', 0, 0],
-#     ['Guo et al. (2020)$^\mathbf{{\dagger}}$', 0, 0],
-#     ['Kapoor et al. (2020)', 2, 4],
-#     ['Kassem et al. (2020)', 0, 0],
-#     ['M. Wang et al. (2020)', 0, 0],
-#     ['Ma et al. (2020)$^\mathbf{{\dagger}}$', 6, 2],
-#     ['Merow & Urban (2020)', 0, 2],    
-#     ['Mollalo et al. (2020)', 0, 0],
-#     ['Notari et al. (2020)', 0, 0],
-#     ['Oliveiros et al. (2020)', 0, 0],
-#     ['Poirier et al. (2020)', 0, 0], 
-#     ['Qi et al. (2020)$^\mathbf{{\dagger}}$', 0, 2],
-#     ['Roy & Kar (2020)', 0, 0], 
-#     ['Runkle et al. (2020)$^\mathbf{{\dagger}}$', 0, 2],
-#     ['Şahin (2020)$^\mathbf{{\dagger}}$', 0, 0], 
-#     ['Sajadi et al. (2020)$^\mathbf{{\dagger}}$', 0, 0],
-#     ['Shi et al. (2020)', 0, 0],
-#     ['Sobral et al. (2020)$^\mathbf{{\dagger}}$', 0, 3],
-#     ['Tosepu et al. (2020)$^\mathbf{{\dagger}}$', 0, 0],
-#     ['Ujiie et al. (2020)$^\mathbf{{\dagger}}$', 0, 3],
-#     ['J. Wang et al. (2020)', 0, 4], 
-#     ['Xie & Zhu (2020)$^\mathbf{{\dagger}}$', 3, 2] ,
-#     ['Xu et al. (2020)', 0, 3],
-#     ['Yudistira et al. (2020)', 0, 0],
-#     ['Yao et al. (2020)$^\mathbf{{\dagger}}$', 3, 0]]
-# studies1 = np.array(studies)[:18]
-# counter = np.arange(0, len(studies1), 1)
-# environ = [float(x) for x in (studies1[:,1])]
-# environx = np.ones(shape=counter.shape[0])
-# nonenviron = [float(x) for x in (studies1[:,2])]
-# nonenvironx = np.ones(shape=counter.shape[0])*2.
-# scale = 2.4
-# for x in counter:
-#     ax.scatter(environx[x], counter[x], s=(environ[x]*2)**scale, color='k', zorder=5)
-#     ax.scatter(nonenvironx[x], counter[x], s=(nonenviron[x]*2)**scale, color='k', zorder=5)
-# # Indicate time varying studies 
-# ax.scatter(2, 4, s=(nonenviron[4]*2)**scale,color='r', zorder=6)    
-# ax.scatter(1, 6, s=(environ[6]*2)**scale, color='r', zorder=6)    
-# ax.scatter(1, 14, s=(environ[14]*2)**scale, color='r', zorder=6)    
-# ax.scatter(1, 8, s=(environ[8]*2)**scale, color='r', zorder=6)    
-# ax.scatter(2, 8, s=(nonenviron[8]*2)**scale, color='r', zorder=6)
-# ax.scatter(1, 15, s=(environ[15]*2)**scale, color='r', zorder=6)    
-# ax.scatter(2, 15, s=(nonenviron[15]*2)**scale, color='r', zorder=6)
-# ax.set_yticks(counter)
-# ax.set_ylim([-0.5, len(studies1)-0.5])
-# ax.set_yticklabels(studies1[:,0], fontsize=11)
-# ax.set_xlim([0.8, 2.2])
-# ax.set_xticks([1, 2])
-# ax.set_xticklabels(['Environmental', 'Non-\nenvironmental'], fontsize=12)
-# ax.grid(True,linestyle="-", lw=0.5, color='silver', zorder=1)
-# ax.invert_yaxis()
-# studies2 = np.array(studies)[18:]
-# counter = np.arange(0, len(studies2), 1)
-# environ = [float(x) for x in (studies2[:,1])]
-# environx = np.ones(shape=counter.shape[0])
-# nonenviron = [float(x) for x in (studies2[:,2])]
-# nonenvironx = np.ones(shape=counter.shape[0])*2.
-# for x in counter:
-#     ax2.scatter(environx[x], counter[x], s=(environ[x]*2)**scale, color='k', zorder=5)
-#     ax2.scatter(nonenvironx[x], counter[x], s=(nonenviron[x]*2)**scale, color='k', zorder=5)
-# ax2.scatter(2, 4, s=(nonenviron[4]*2)**scale, color='r', zorder=6)    
-# ax2.scatter(2, 3, s=(nonenviron[3]*2)**scale, color='r', zorder=6)    
-# ax2.scatter(2, 9, s=(nonenviron[9]*2)**scale, color='r', zorder=6)    
-# ax2.scatter(2, 14, s=(environ[14]*2)**scale, color='r', zorder=6)
-# ax2.scatter(2, 6, s=(nonenviron[6]*2)**scale, color='r', zorder=6)   
-# ax2.scatter(2, 5, s=(nonenviron[5]*2)**scale, color='r', zorder=6)
-# ax2.scatter(1, 13, s=(environ[13]*2)**scale, color='r', zorder=6)
-# ax2.scatter(2, 13, s=(nonenviron[13]*2)**scale, color='r', zorder=6)
-# ax2.set_yticks(counter)
-# ax2.set_ylim([-0.5, len(studies2)-0.5])
-# ax2.set_yticklabels(studies2[:,0], fontsize=11)
-# ax2.set_xlim([0.8, 2.2])
-# ax2.set_xticks([1, 2])
-# ax2.set_xticklabels(['Environmental', 'Non-\nenvironmental'], fontsize=12)
-# ax2.grid(True,linestyle="-", lw=0.5, color='silver', zorder=1)
-# ax2.invert_yaxis()
-# plt.subplots_adjust(left=0.28, wspace=1.1)
-# # Remove spines
-# for axtemp in [ax, ax2]:
-#     axtemp.spines['right'].set_visible(False)
-#     axtemp.spines['top'].set_visible(False)
-#     axtemp.spines['bottom'].set_visible(False)
-#     axtemp.spines['left'].set_visible(False)
-# from matplotlib.lines import Line2D
-# legend_elements = [Line2D([0], [0], color='w', marker='o', markerfacecolor='k',
-#     markeredgecolor='k', markersize=15, label='Static'), Line2D([0], [0], 
-#     marker='o', color='w', markersize=15, markerfacecolor='r', 
-#     markeredgecolor='r', label='Time-varying')]
-# # Create the figure
-# ax.legend(handles=legend_elements, ncol=2, frameon=False, loc='upper center',
-#           bbox_to_anchor=[0.9, 1.1], fontsize=14)    
-# ax.set_title(r'$\bf{^{\dagger}}$ Peer-reviewed', x=2.2, y=1.01, 
-#     fontsize=14)    
-# ax.tick_params(axis='both', length=0)
-# ax2.tick_params(axis='both', length=0)
-# plt.savefig('/Users/ghkerr/COVID/figs/'+'fig3.pdf', dpi=600)
+# # # # FIGURE 3
+fig = plt.figure(figsize=(10,10))
+ax = plt.subplot2grid((2,2),(0,0), rowspan=2)
+ax2 = plt.subplot2grid((2,2),(0,1), rowspan=2)
+# Study, control environmental, control non-environmental
+studies = [['Ahmadi et al. (2020)$^\mathbf{{\dagger}}$', 0, 0],
+    ['Alvarez-Ramirez & Meraz (2020)', 0, 0],
+    ['Araújo & Naimi (2020)', 0, 0],
+    ['Auler et al. (2020)$^\mathbf{{\dagger}}$', 0, 0],
+    ['Bashir et al. (2020)$^\mathbf{{\dagger}}$', 0 ,0],
+    ['Bukhari et al. (2020)$^\mathbf{{\dagger}}$', 0, 0],
+    ['Byass (2020)$^\mathbf{{\dagger}}$', 2, 1],
+    ['Caspi et al. (2020)', 0, 0],
+    ['Carleton et al. (2020)$^\mathbf{{\dagger}}$', 2, 8],
+    ['Chen et al. (2020)', 0, 0],
+    ['Correa-Araneda et al. (2020)', 0, 0],
+    ['Guo et al. (2020)$^\mathbf{{\dagger}}$', 0, 0],
+    ['Jamil et al. (2020)$^\mathbf{{\dagger}}$', 0, 0],
+    ['Kaplin et al. (2020)', 0, 3],
+    ['Kapoor et al. (2020)', 2, 4],
+    ['Kassem et al. (2020)', 0, 0],
+    ['Lin et al. (2020)', 0, 3], 
+    ['M. Wang et al. (2020)', 0, 0],
+    ['Ma, Zhao et al. (2020)$^\mathbf{{\dagger}}$', 6, 2],
+    ['Ma, Pei et al. (2020)', 1, 13],
+    ['Merow & Urban (2020)$^\mathbf{{\dagger}}$', 0, 3], #population density, proportion of population over 60years, country effects
+    ['Meyer et al. (2020)$^\mathbf{{\dagger}}$', 0, 2],
+    ['Mollalo et al. (2020)', 0, 0],
+    ['Notari et al. (2020)', 0, 0],
+    ['Oliveiros et al. (2020)', 0, 0],
+    ['Poirier et al. (2020)$^\mathbf{{\dagger}}$', 0, 0], 
+    ['Qi et al. (2020)$^\mathbf{{\dagger}}$', 0, 2],
+    ['Roy & Kar (2020)', 0, 0], 
+    ['Runkle et al. (2020)$^\mathbf{{\dagger}}$', 0, 2],
+    ['Rosario et al. (2020)$^\mathbf{{\dagger}}$', 0, 0],
+    ['Şahin (2020)$^\mathbf{{\dagger}}$', 0, 0], 
+    ['Sajadi et al. (2020)$^\mathbf{{\dagger}}$', 0, 0],
+    ['Shi et al. (2020)', 0, 0],
+    ['Sobral et al. (2020)$^\mathbf{{\dagger}}$', 0, 3],
+    ['Tawio & Fashola (2020)', 0, 0],
+    ['To et al. (2021)$^\mathbf{{\dagger}}$', 2, 1],
+    ['Tosepu et al. (2020)$^\mathbf{{\dagger}}$', 0, 0],
+    ['Ujiie et al. (2020)$^\mathbf{{\dagger}}$', 0, 3],
+    ['J. Wang et al. (2020)', 0, 4], 
+    ['Xie & Zhu (2020)$^\mathbf{{\dagger}}$', 3, 2] ,
+    ['Xu et al. (2020)', 0, 3],
+    ['Yudistira et al. (2020)', 0, 0],
+    ['Yao et al. (2020)$^\mathbf{{\dagger}}$', 3, 0]]
+studies1 = np.array(studies)[:21]
+counter = np.arange(0, len(studies1), 1)
+environ = [float(x) for x in (studies1[:,1])]
+environx = np.ones(shape=counter.shape[0])
+nonenviron = [float(x) for x in (studies1[:,2])]
+nonenvironx = np.ones(shape=counter.shape[0])*2.
+scale = 2.2
+for x in counter:
+    ax.scatter(environx[x], counter[x], s=(environ[x]*2)**scale, color='k', zorder=5)
+    ax.scatter(nonenvironx[x], counter[x], s=(nonenviron[x]*2)**scale, color='k', zorder=5)
+# Indicate time-varying studies 
+# Byass 
+ax.scatter(1, 6, s=(environ[6]*2)**scale, color='r', zorder=6)
+ax.scatter(2, 6, s=(nonenviron[6]*2)**scale, color='r', zorder=6)
+# Kaplin 
+ax.scatter(2, 13, s=(nonenviron[13]*2)**scale, color='r', zorder=6)
+# Lin
+ax.scatter(2, 16, s=(nonenviron[16]*2)**scale, color='r', zorder=6)
+# Ma, Pei 
+ax.scatter(1, 19, s=(nonenviron[20]*2)**scale, color='r', zorder=6)
+# Carleton
+ax.scatter(1, 8, s=(environ[8]*2)**scale, color='r', zorder=6)    
+ax.scatter(2, 8, s=(nonenviron[8]*2)**scale, color='r', zorder=6)
+# Ma, Zhao
+ax.scatter(1, 18, s=(environ[18]*2)**scale, color='r', zorder=6)    
+ax.scatter(2, 18, s=(nonenviron[18]*2)**scale, color='r', zorder=6)
+ax.set_yticks(counter)
+ax.set_ylim([-0.5, len(studies1)-0.5])
+ax.set_yticklabels(studies1[:,0], fontsize=11)
+ax.set_xlim([0.8, 2.2])
+ax.set_xticks([1, 2])
+ax.set_xticklabels(['Environmental', 'Non-\nenvironmental'], fontsize=12)
+ax.grid(True,linestyle="-", lw=0.5, color='silver', zorder=1)
+ax.invert_yaxis()
+studies2 = np.array(studies)[21:]
+counter = np.arange(0, len(studies2), 1)
+environ = [float(x) for x in (studies2[:,1])]
+environx = np.ones(shape=counter.shape[0])
+nonenviron = [float(x) for x in (studies2[:,2])]
+nonenvironx = np.ones(shape=counter.shape[0])*2.
+for x in counter:
+    ax2.scatter(environx[x], counter[x], s=(environ[x]*2)**scale, color='k', zorder=5)
+    ax2.scatter(nonenvironx[x], counter[x], s=(nonenviron[x]*2)**scale, color='k', zorder=5)
+# Indicate time-varying studies    
+# Meyer 
+ax2.scatter(2, 0, s=(nonenviron[0]*2)**scale, color='r', zorder=6)
+# To
+ax2.scatter(1, 14, s=(nonenviron[14]*2)**scale, color='r', zorder=6)
+# Sobral
+ax2.scatter(2, 12, s=(nonenviron[12]*2)**scale, color='r', zorder=6)    
+# Xie & Zhu
+ax2.scatter(1, 18, s=(environ[18]*2)**scale, color='r', zorder=6)    
+ax2.scatter(2, 18, s=(nonenviron[18]*2)**scale, color='r', zorder=6)
+# Qi 
+ax2.scatter(2, 5, s=(nonenviron[5]*2)**scale, color='r', zorder=6)
+# Runkle
+ax2.scatter(2, 7, s=(nonenviron[7]*2)**scale, color='r', zorder=6)
+ax2.set_yticks(counter)
+ax2.set_ylim([-0.5, len(studies2)-0.5])
+ax2.set_yticklabels(studies2[:,0], fontsize=11)
+ax2.set_xlim([0.8, 2.2])
+ax2.set_xticks([1, 2])
+ax2.set_xticklabels(['Environmental', 'Non-\nenvironmental'], fontsize=12)
+ax2.grid(True,linestyle="-", lw=0.5, color='silver', zorder=1)
+ax2.invert_yaxis()
+plt.subplots_adjust(left=0.28, wspace=1.1)
+# Remove spines
+for axtemp in [ax, ax2]:
+    axtemp.spines['right'].set_visible(False)
+    axtemp.spines['top'].set_visible(False)
+    axtemp.spines['bottom'].set_visible(False)
+    axtemp.spines['left'].set_visible(False)
+from matplotlib.lines import Line2D
+legend_elements = [Line2D([0], [0], color='w', marker='o', markerfacecolor='k',
+    markeredgecolor='k', markersize=15, label='Static'), Line2D([0], [0], 
+    marker='o', color='w', markersize=15, markerfacecolor='r', 
+    markeredgecolor='r', label='Time-varying')]
+# Create the figure
+ax.legend(handles=legend_elements, ncol=2, frameon=False, loc='upper center',
+          bbox_to_anchor=[0.9, 1.1], fontsize=14)    
+ax.set_title(r'$\bf{^{\dagger}}$ Peer-reviewed', x=-0.43, y=1.045, 
+    fontsize=14)    
+ax.tick_params(axis='both', length=0)
+ax2.tick_params(axis='both', length=0)
+plt.savefig('/Users/ghkerr/COVID/figs/'+'fig3_revised.pdf', dpi=1000)
