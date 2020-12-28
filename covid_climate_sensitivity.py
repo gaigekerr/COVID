@@ -949,136 +949,136 @@ if 'mpl' not in sys.modules:
 # # Saving
 # plt.savefig('/Users/ghkerr/COVID/figs/'+'fig4_revised.pdf', dpi=1000)
 
-# # # # FIGURE 3
-fig = plt.figure(figsize=(10,10))
-ax = plt.subplot2grid((2,2),(0,0), rowspan=2)
-ax2 = plt.subplot2grid((2,2),(0,1), rowspan=2)
-# Study, control environmental, control non-environmental
-studies = [['Ahmadi et al. (2020)$^\mathbf{{\dagger}}$', 0, 0],
-    ['Alvarez-Ramirez & Meraz (2020)', 0, 0],
-    ['Araújo & Naimi (2020)', 0, 0],
-    ['Auler et al. (2020)$^\mathbf{{\dagger}}$', 0, 0],
-    ['Bashir et al. (2020)$^\mathbf{{\dagger}}$', 0 ,0],
-    ['Bukhari et al. (2020)$^\mathbf{{\dagger}}$', 0, 0],
-    ['Byass (2020)$^\mathbf{{\dagger}}$', 2, 1],
-    ['Caspi et al. (2020)', 0, 0],
-    ['Carleton et al. (2020)$^\mathbf{{\dagger}}$', 2, 8],
-    ['Chen et al. (2020)', 0, 0],
-    ['Correa-Araneda et al. (2020)', 0, 0],
-    ['Guo et al. (2020)$^\mathbf{{\dagger}}$', 0, 0],
-    ['Jamil et al. (2020)$^\mathbf{{\dagger}}$', 0, 0],
-    ['Kaplin et al. (2020)', 0, 3],
-    ['Kapoor et al. (2020)', 2, 4],
-    ['Kassem et al. (2020)', 0, 0],
-    ['Lin et al. (2020)', 0, 3], 
-    ['M. Wang et al. (2020)', 0, 0],
-    ['Ma, Zhao et al. (2020)$^\mathbf{{\dagger}}$', 6, 2],
-    ['Ma, Pei et al. (2020)', 1, 13],
-    ['Merow & Urban (2020)$^\mathbf{{\dagger}}$', 0, 3], #population density, proportion of population over 60years, country effects
-    ['Meyer et al. (2020)$^\mathbf{{\dagger}}$', 0, 2],
-    ['Mollalo et al. (2020)', 0, 0],
-    ['Notari et al. (2020)', 0, 0],
-    ['Oliveiros et al. (2020)', 0, 0],
-    ['Poirier et al. (2020)$^\mathbf{{\dagger}}$', 0, 0], 
-    ['Qi et al. (2020)$^\mathbf{{\dagger}}$', 0, 2],
-    ['Roy & Kar (2020)', 0, 0], 
-    ['Runkle et al. (2020)$^\mathbf{{\dagger}}$', 0, 2],
-    ['Rosario et al. (2020)$^\mathbf{{\dagger}}$', 0, 0],
-    ['Şahin (2020)$^\mathbf{{\dagger}}$', 0, 0], 
-    ['Sajadi et al. (2020)$^\mathbf{{\dagger}}$', 0, 0],
-    ['Shi et al. (2020)', 0, 0],
-    ['Sobral et al. (2020)$^\mathbf{{\dagger}}$', 0, 3],
-    ['Tawio & Fashola (2020)', 0, 0],
-    ['To et al. (2021)$^\mathbf{{\dagger}}$', 2, 1],
-    ['Tosepu et al. (2020)$^\mathbf{{\dagger}}$', 0, 0],
-    ['Ujiie et al. (2020)$^\mathbf{{\dagger}}$', 0, 3],
-    ['J. Wang et al. (2020)', 0, 4], 
-    ['Xie & Zhu (2020)$^\mathbf{{\dagger}}$', 3, 2] ,
-    ['Xu et al. (2020)', 0, 3],
-    ['Yudistira et al. (2020)', 0, 0],
-    ['Yao et al. (2020)$^\mathbf{{\dagger}}$', 3, 0]]
-studies1 = np.array(studies)[:21]
-counter = np.arange(0, len(studies1), 1)
-environ = [float(x) for x in (studies1[:,1])]
-environx = np.ones(shape=counter.shape[0])
-nonenviron = [float(x) for x in (studies1[:,2])]
-nonenvironx = np.ones(shape=counter.shape[0])*2.
-scale = 2.2
-for x in counter:
-    ax.scatter(environx[x], counter[x], s=(environ[x]*2)**scale, color='k', zorder=5)
-    ax.scatter(nonenvironx[x], counter[x], s=(nonenviron[x]*2)**scale, color='k', zorder=5)
-# Indicate time-varying studies 
-# Byass 
-ax.scatter(1, 6, s=(environ[6]*2)**scale, color='r', zorder=6)
-ax.scatter(2, 6, s=(nonenviron[6]*2)**scale, color='r', zorder=6)
-# Kaplin 
-ax.scatter(2, 13, s=(nonenviron[13]*2)**scale, color='r', zorder=6)
-# Lin
-ax.scatter(2, 16, s=(nonenviron[16]*2)**scale, color='r', zorder=6)
-# Ma, Pei 
-ax.scatter(1, 19, s=(nonenviron[20]*2)**scale, color='r', zorder=6)
-# Carleton
-ax.scatter(1, 8, s=(environ[8]*2)**scale, color='r', zorder=6)    
-ax.scatter(2, 8, s=(nonenviron[8]*2)**scale, color='r', zorder=6)
-# Ma, Zhao
-ax.scatter(1, 18, s=(environ[18]*2)**scale, color='r', zorder=6)    
-ax.scatter(2, 18, s=(nonenviron[18]*2)**scale, color='r', zorder=6)
-ax.set_yticks(counter)
-ax.set_ylim([-0.5, len(studies1)-0.5])
-ax.set_yticklabels(studies1[:,0], fontsize=11)
-ax.set_xlim([0.8, 2.2])
-ax.set_xticks([1, 2])
-ax.set_xticklabels(['Environmental', 'Non-\nenvironmental'], fontsize=12)
-ax.grid(True,linestyle="-", lw=0.5, color='silver', zorder=1)
-ax.invert_yaxis()
-studies2 = np.array(studies)[21:]
-counter = np.arange(0, len(studies2), 1)
-environ = [float(x) for x in (studies2[:,1])]
-environx = np.ones(shape=counter.shape[0])
-nonenviron = [float(x) for x in (studies2[:,2])]
-nonenvironx = np.ones(shape=counter.shape[0])*2.
-for x in counter:
-    ax2.scatter(environx[x], counter[x], s=(environ[x]*2)**scale, color='k', zorder=5)
-    ax2.scatter(nonenvironx[x], counter[x], s=(nonenviron[x]*2)**scale, color='k', zorder=5)
-# Indicate time-varying studies    
-# Meyer 
-ax2.scatter(2, 0, s=(nonenviron[0]*2)**scale, color='r', zorder=6)
-# To
-ax2.scatter(1, 14, s=(nonenviron[14]*2)**scale, color='r', zorder=6)
-# Sobral
-ax2.scatter(2, 12, s=(nonenviron[12]*2)**scale, color='r', zorder=6)    
-# Xie & Zhu
-ax2.scatter(1, 18, s=(environ[18]*2)**scale, color='r', zorder=6)    
-ax2.scatter(2, 18, s=(nonenviron[18]*2)**scale, color='r', zorder=6)
-# Qi 
-ax2.scatter(2, 5, s=(nonenviron[5]*2)**scale, color='r', zorder=6)
-# Runkle
-ax2.scatter(2, 7, s=(nonenviron[7]*2)**scale, color='r', zorder=6)
-ax2.set_yticks(counter)
-ax2.set_ylim([-0.5, len(studies2)-0.5])
-ax2.set_yticklabels(studies2[:,0], fontsize=11)
-ax2.set_xlim([0.8, 2.2])
-ax2.set_xticks([1, 2])
-ax2.set_xticklabels(['Environmental', 'Non-\nenvironmental'], fontsize=12)
-ax2.grid(True,linestyle="-", lw=0.5, color='silver', zorder=1)
-ax2.invert_yaxis()
-plt.subplots_adjust(left=0.28, wspace=1.1)
-# Remove spines
-for axtemp in [ax, ax2]:
-    axtemp.spines['right'].set_visible(False)
-    axtemp.spines['top'].set_visible(False)
-    axtemp.spines['bottom'].set_visible(False)
-    axtemp.spines['left'].set_visible(False)
-from matplotlib.lines import Line2D
-legend_elements = [Line2D([0], [0], color='w', marker='o', markerfacecolor='k',
-    markeredgecolor='k', markersize=15, label='Static'), Line2D([0], [0], 
-    marker='o', color='w', markersize=15, markerfacecolor='r', 
-    markeredgecolor='r', label='Time-varying')]
-# Create the figure
-ax.legend(handles=legend_elements, ncol=2, frameon=False, loc='upper center',
-          bbox_to_anchor=[0.9, 1.1], fontsize=14)    
-ax.set_title(r'$\bf{^{\dagger}}$ Peer-reviewed', x=-0.43, y=1.045, 
-    fontsize=14)    
-ax.tick_params(axis='both', length=0)
-ax2.tick_params(axis='both', length=0)
-plt.savefig('/Users/ghkerr/COVID/figs/'+'fig3_revised.pdf', dpi=1000)
+# # # # # FIGURE 3
+# fig = plt.figure(figsize=(10,10))
+# ax = plt.subplot2grid((2,2),(0,0), rowspan=2)
+# ax2 = plt.subplot2grid((2,2),(0,1), rowspan=2)
+# # Study, control environmental, control non-environmental
+# studies = [['Ahmadi et al. (2020)$^\mathbf{{\dagger}}$', 0, 0],
+#     ['Alvarez-Ramirez & Meraz (2020)', 0, 0],
+#     ['Araújo & Naimi (2020)', 0, 0],
+#     ['Auler et al. (2020)$^\mathbf{{\dagger}}$', 0, 0],
+#     ['Bashir et al. (2020)$^\mathbf{{\dagger}}$', 0 ,0],
+#     ['Bukhari et al. (2020)$^\mathbf{{\dagger}}$', 0, 0],
+#     ['Byass (2020)$^\mathbf{{\dagger}}$', 2, 1],
+#     ['Caspi et al. (2020)', 0, 0],
+#     ['Carleton et al. (2020)$^\mathbf{{\dagger}}$', 2, 8],
+#     ['Chen et al. (2020)', 0, 0],
+#     ['Correa-Araneda et al. (2020)', 0, 0],
+#     ['Guo et al. (2020)$^\mathbf{{\dagger}}$', 0, 0],
+#     ['Jamil et al. (2020)$^\mathbf{{\dagger}}$', 0, 0],
+#     ['Kaplin et al. (2020)', 0, 3],
+#     ['Kapoor et al. (2020)', 2, 4],
+#     ['Kassem et al. (2020)', 0, 0],
+#     ['Lin et al. (2020)', 0, 3], 
+#     ['M. Wang et al. (2020)', 0, 0],
+#     ['Ma, Zhao et al. (2020)$^\mathbf{{\dagger}}$', 6, 2],
+#     ['Ma, Pei et al. (2020)', 1, 13],
+#     ['Merow & Urban (2020)$^\mathbf{{\dagger}}$', 0, 3], #population density, proportion of population over 60years, country effects
+#     ['Meyer et al. (2020)$^\mathbf{{\dagger}}$', 0, 2],
+#     ['Mollalo et al. (2020)', 0, 0],
+#     ['Notari et al. (2020)', 0, 0],
+#     ['Oliveiros et al. (2020)', 0, 0],
+#     ['Poirier et al. (2020)$^\mathbf{{\dagger}}$', 0, 0], 
+#     ['Qi et al. (2020)$^\mathbf{{\dagger}}$', 0, 2],
+#     ['Roy & Kar (2020)', 0, 0], 
+#     ['Runkle et al. (2020)$^\mathbf{{\dagger}}$', 0, 2],
+#     ['Rosario et al. (2020)$^\mathbf{{\dagger}}$', 0, 0],
+#     ['Şahin (2020)$^\mathbf{{\dagger}}$', 0, 0], 
+#     ['Sajadi et al. (2020)$^\mathbf{{\dagger}}$', 0, 0],
+#     ['Shi et al. (2020)', 0, 0],
+#     ['Sobral et al. (2020)$^\mathbf{{\dagger}}$', 0, 3],
+#     ['Tawio & Fashola (2020)', 0, 0],
+#     ['To et al. (2021)$^\mathbf{{\dagger}}$', 2, 1],
+#     ['Tosepu et al. (2020)$^\mathbf{{\dagger}}$', 0, 0],
+#     ['Ujiie et al. (2020)$^\mathbf{{\dagger}}$', 0, 3],
+#     ['J. Wang et al. (2020)', 0, 4], 
+#     ['Xie & Zhu (2020)$^\mathbf{{\dagger}}$', 3, 2] ,
+#     ['Xu et al. (2020)', 0, 3],
+#     ['Yudistira et al. (2020)', 0, 0],
+#     ['Yao et al. (2020)$^\mathbf{{\dagger}}$', 3, 0]]
+# studies1 = np.array(studies)[:21]
+# counter = np.arange(0, len(studies1), 1)
+# environ = [float(x) for x in (studies1[:,1])]
+# environx = np.ones(shape=counter.shape[0])
+# nonenviron = [float(x) for x in (studies1[:,2])]
+# nonenvironx = np.ones(shape=counter.shape[0])*2.
+# scale = 2.2
+# for x in counter:
+#     ax.scatter(environx[x], counter[x], s=(environ[x]*2)**scale, color='k', zorder=5)
+#     ax.scatter(nonenvironx[x], counter[x], s=(nonenviron[x]*2)**scale, color='k', zorder=5)
+# # Indicate time-varying studies 
+# # Byass 
+# ax.scatter(1, 6, s=(environ[6]*2)**scale, color='r', zorder=6)
+# ax.scatter(2, 6, s=(nonenviron[6]*2)**scale, color='r', zorder=6)
+# # Kaplin 
+# ax.scatter(2, 13, s=(nonenviron[13]*2)**scale, color='r', zorder=6)
+# # Lin
+# ax.scatter(2, 16, s=(nonenviron[16]*2)**scale, color='r', zorder=6)
+# # Ma, Pei 
+# ax.scatter(1, 19, s=(nonenviron[20]*2)**scale, color='r', zorder=6)
+# # Carleton
+# ax.scatter(1, 8, s=(environ[8]*2)**scale, color='r', zorder=6)    
+# ax.scatter(2, 8, s=(nonenviron[8]*2)**scale, color='r', zorder=6)
+# # Ma, Zhao
+# ax.scatter(1, 18, s=(environ[18]*2)**scale, color='r', zorder=6)    
+# ax.scatter(2, 18, s=(nonenviron[18]*2)**scale, color='r', zorder=6)
+# ax.set_yticks(counter)
+# ax.set_ylim([-0.5, len(studies1)-0.5])
+# ax.set_yticklabels(studies1[:,0], fontsize=11)
+# ax.set_xlim([0.8, 2.2])
+# ax.set_xticks([1, 2])
+# ax.set_xticklabels(['Environmental', 'Non-\nenvironmental'], fontsize=12)
+# ax.grid(True,linestyle="-", lw=0.5, color='silver', zorder=1)
+# ax.invert_yaxis()
+# studies2 = np.array(studies)[21:]
+# counter = np.arange(0, len(studies2), 1)
+# environ = [float(x) for x in (studies2[:,1])]
+# environx = np.ones(shape=counter.shape[0])
+# nonenviron = [float(x) for x in (studies2[:,2])]
+# nonenvironx = np.ones(shape=counter.shape[0])*2.
+# for x in counter:
+#     ax2.scatter(environx[x], counter[x], s=(environ[x]*2)**scale, color='k', zorder=5)
+#     ax2.scatter(nonenvironx[x], counter[x], s=(nonenviron[x]*2)**scale, color='k', zorder=5)
+# # Indicate time-varying studies    
+# # Meyer 
+# ax2.scatter(2, 0, s=(nonenviron[0]*2)**scale, color='r', zorder=6)
+# # To
+# ax2.scatter(1, 14, s=(environ[14]*2)**scale, color='r', zorder=6)
+# # Sobral
+# ax2.scatter(2, 12, s=(nonenviron[12]*2)**scale, color='r', zorder=6)    
+# # Xie & Zhu
+# ax2.scatter(1, 18, s=(environ[18]*2)**scale, color='r', zorder=6)    
+# ax2.scatter(2, 18, s=(nonenviron[18]*2)**scale, color='r', zorder=6)
+# # Qi 
+# ax2.scatter(2, 5, s=(nonenviron[5]*2)**scale, color='r', zorder=6)
+# # Runkle
+# ax2.scatter(2, 7, s=(nonenviron[7]*2)**scale, color='r', zorder=6)
+# ax2.set_yticks(counter)
+# ax2.set_ylim([-0.5, len(studies2)-0.5])
+# ax2.set_yticklabels(studies2[:,0], fontsize=11)
+# ax2.set_xlim([0.8, 2.2])
+# ax2.set_xticks([1, 2])
+# ax2.set_xticklabels(['Environmental', 'Non-\nenvironmental'], fontsize=12)
+# ax2.grid(True,linestyle="-", lw=0.5, color='silver', zorder=1)
+# ax2.invert_yaxis()
+# plt.subplots_adjust(left=0.28, wspace=1.1)
+# # Remove spines
+# for axtemp in [ax, ax2]:
+#     axtemp.spines['right'].set_visible(False)
+#     axtemp.spines['top'].set_visible(False)
+#     axtemp.spines['bottom'].set_visible(False)
+#     axtemp.spines['left'].set_visible(False)
+# from matplotlib.lines import Line2D
+# legend_elements = [Line2D([0], [0], color='w', marker='o', markerfacecolor='k',
+#     markeredgecolor='k', markersize=15, label='Static'), Line2D([0], [0], 
+#     marker='o', color='w', markersize=15, markerfacecolor='r', 
+#     markeredgecolor='r', label='Time-varying')]
+# # Create the figure
+# ax.legend(handles=legend_elements, ncol=2, frameon=False, loc='upper center',
+#           bbox_to_anchor=[0.9, 1.1], fontsize=14)    
+# ax.set_title(r'$\bf{^{\dagger}}$ Peer-reviewed', x=-0.43, y=1.045, 
+#     fontsize=14)    
+# ax.tick_params(axis='both', length=0)
+# ax2.tick_params(axis='both', length=0)
+# plt.savefig('/Users/ghkerr/COVID/figs/'+'fig3_revised.pdf', dpi=1000)
