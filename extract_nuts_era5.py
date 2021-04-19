@@ -40,7 +40,6 @@ def extract_admin_era5(year, vnuts, domain):
     from netCDF4 import num2date, Dataset
     import shapefile
     from shapely.geometry import shape, Point
-    
     # Relevant directories
     DIR_ROOT = '/mnt/sahara/data1/COVID/' 
     DIR_ERA = DIR_ROOT+'ERA5/daily/%d/latest/'%year
