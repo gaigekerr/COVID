@@ -780,7 +780,7 @@ def extract_admin_era5(year, vnuts, domain):
             columns=[x[:-9] for x in swvl2l_dates])
         swvl2l_df = pd.concat([row_df, swvl2l_df])
         row_df_wt = pd.DataFrame([swvl2l_nuts_wt], index=[ifid], 
-            columns=[x[:-9] for x in swvl3l_dates])
+            columns=[x[:-9] for x in swvl2l_dates])
         swvl2l_df_wt = pd.concat([row_df_wt, swvl2l_df_wt]) 
         # swvl3
         row_df = pd.DataFrame([swvl3l_nuts], index=[ifid], 
@@ -1010,6 +1010,3 @@ for adminlev in [1,2]:
     print('\n')
     print('Finished in %d seconds!'%diff.seconds)
     print('\n')    
-    
-
-
