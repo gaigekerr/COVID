@@ -25,12 +25,12 @@ from scipy import stats
 # Note that if the year is given as "2020a", this will process the static
 # Jan-Aug unchanging part of the data record, while "2020" will process
 # the latest months. 
-year = 2020
+year = 2022
 
 # ERA5 variables (n.b., each individual .nc file should contain hourly data 
 # corresponding to individual variables in list VARS)
-DDIR = '/mnt/sahara/data2/gaige/'
-DDIR_OUT = '/mnt/sahara/data1/COVID/ERA5/daily/'
+DDIR = '/mnt/local_drive/gaige/'
+DDIR_OUT = '/mnt/local_drive/gaige/era5-parsed/%d/'%year
 
 # Variables as they appear in file names
 FSTR = ['10m_u_component_of_wind',
@@ -62,7 +62,6 @@ VAR = ['u10',
     'swvl3',
     'swvl4',
     'slhf']
-
 # Loop through variables/files
 for fstri in FSTR:
     var = VAR[np.where(np.array(FSTR)==fstri)[0][0]]
@@ -112,13 +111,13 @@ for fstri in FSTR:
                     dim1 = vararr[x][0]
                     dim2 = vararr[x][1]
                     nunique1 = np.unique(dim1)
-                    numique2 = np.unique(dim2)
+                    nunique2 = np.unique(dim2)
                     # Replace with NaN
                     if nunique1.shape[0]==1:
                         vararr[x][0] = np.nan
-                    else: 
+                    if nunique2.shape[0]==1: 
                         vararr[x][1] = np.nan
-            vararr = np.nanmean(vararr, axis=1)
+                vararr = np.nanmean(vararr, axis=1)
         except KeyError:
             vararr_0001 = infile.variables[var+'_0001'][whereday]
             vararr_0005 = infile.variables[var+'_0005'][whereday]
