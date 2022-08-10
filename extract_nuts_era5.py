@@ -40,11 +40,14 @@ def extract_admin_era5(year, vnuts, domain):
     from netCDF4 import num2date, Dataset
     import shapefile
     from shapely.geometry import shape, Point
+
     # Relevant directories
-    DIR_ROOT = '/mnt/sahara/data1/COVID/' 
-    DIR_ERA = DIR_ROOT+'ERA5/daily/%d/latest/'%year
-    DIR_GPW = '/mnt/sahara/data1/COVID/geography/GPW/'    
-    DIR_OUT = DIR_ROOT+'code/dataprocessing/ERA5tables/'
+    DIR_ROOT = '/mnt/redwood/sahara/data1/COVID/' 
+    DIR_ROOT = '/mnt/redwood/local_drive/gaige/'
+    DIR_ROOT = '/mnt/local_drive/gaige/'
+    DIR_ERA = DIR_ROOT+'era5-parsed/%d/'%year
+    DIR_GPW = DIR_ROOT+'geography/GPW/'    
+    DIR_OUT = DIR_ROOT+'ERA5tables/'
     if domain=='NUTS':
         DIR_SHAPE = DIR_ROOT+'geography/NUTS_shapefiles/'+\
             'NUTS_RG_10M_2016_4326_LEVL_%s/'%vnuts
@@ -990,22 +993,24 @@ def extract_admin_era5(year, vnuts, domain):
           pd.to_datetime(slhfl_dates[-1]).strftime('%Y%m%d')), sep=',')    
     return 
 
-from datetime import datetime
-# For Europe
-for vnuts in [1,2,3]:
-    start = datetime.now()
-    print('Extracting NUTS%d subdivisions!'%(vnuts))
-    extract_admin_era5(2020, vnuts, 'NUTS')
-    diff = datetime.now() - start
-    print('\n')
-    print('Finished in %d seconds!'%diff.seconds)
-    print('\n')
-# For Brazil
-for adminlev in [1,2]:
-    start = datetime.now()
-    print('Extracting IBGE%d subdivisions!'%(adminlev))
-    extract_admin_era5(2020, adminlev, 'IBGE')
-    diff = datetime.now() - start
-    print('\n')
-    print('Finished in %d seconds!'%diff.seconds)
-    print('\n')    
+import numpy as np
+from datetime import datetime 
+for year in np.arange(2022, 2023, 1):
+    # For Europe
+    for vnuts in [1,2,3]:
+        start = datetime.now()
+        print('Extracting NUTS%d subdivisions!'%(vnuts))
+        extract_admin_era5(year, vnuts, 'NUTS')
+        diff = datetime.now() - start
+        print('\n')
+        print('Finished in %d seconds!'%diff.seconds)
+        print('\n')
+    # For Brazil
+    for adminlev in [1,2]:
+        start = datetime.now()
+        print('Extracting IBGE%d subdivisions!'%(adminlev))
+        extract_admin_era5(year, adminlev, 'IBGE')
+        diff = datetime.now() - start
+        print('\n')
+        print('Finished in %d seconds!'%diff.seconds)
+        print('\n')
